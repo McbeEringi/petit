@@ -9,11 +9,11 @@ special thanks to [wgld.org](https://wgld.org)
 all functions return formatted Object named `model`
 ```js
 ({
-	p:verticles,
-	n:normals,
-	c:colors,
-	t:uvs,
-	i:indices
+	p:verticles,// Array(3*n)
+	n:normals,// Array(3*n)
+	c:colors,// Array(4*n)
+	t:uvs,// Array(2*n)
+	i:indices// Array(m)
 })
 ```
 - cube( scale=1 *Number*, color=auto *Array(4)* ) => model *Object*  
