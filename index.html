@@ -27,11 +27,13 @@
 		import prism from 'https://esm.run/prismjs';
 		const e=document.querySelector('p'),url=(location.search.slice(1)||'README')+'.md';
 		marked.setOptions({baseUrl:url,highlight:(code,lang)=>prism.languages[lang]?prism.highlight(code,prism.languages[lang],lang):code});
-		(async()=>(
-			document.body.insertAdjacentHTML('afterbegin',marked.parse(await(await fetch(url)).text())),
+		(async w=>{
+			w=await fetch(url);
+			if(!w.ok)throw`${w.status} - ${w.statusText}`;
+			document.body.insertAdjacentHTML('afterbegin',marked.parse(await w.text())),
 			document.querySelectorAll('a[href$=".md"]:not([attr^="http"])').forEach(x=>x.setAttribute('href','?'+x.getAttribute('href').slice(0,-3))),
 			e.remove()
-		))().catch(w=>e.textContent=w);
+		})().catch(w=>e.textContent=w);
 	</script>
 </body>
 </html>
