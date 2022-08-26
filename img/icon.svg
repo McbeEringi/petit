@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128">
 	<desc>Petit icon</desc>
-	<g style="fill:none;stroke:#63c;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;" transform="translate(64,64)">
+	<g style="fill:none;stroke:#6ca;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;" transform="translate(64,64)">
 		<path d="M-48,48v-48a48,48,0,1,1,96,0"/>
 		<g transform="rotate(150)">
 			<path d="M-48,0a48,48,0,1,1,96,0h-88"/>

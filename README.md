@@ -1,6 +1,7 @@
 # PetitJS
 ![icon](img/icon.svg)
-Petit - set of *petit* and useful JS libs
+
+PetitJS - set of *petit* and useful JS libs
 
 ## libs
 ### WebGL
