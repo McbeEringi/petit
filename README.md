@@ -4,17 +4,18 @@
 PetitJS - set of *petit* and useful JS libs
 
 ## libs
+⛓: method chaining design
 ### WebGL
-- PetitGL WIP
-- PetitMQ
-- PetitPrim
-- PetitCol
+- **PetitGL** WebGL wrapper ⛓ WIP
+- **PetitMQ** matrix & quaternion calc ⛓ [doc](docs/mq.md) [dl](mq.mjs)
+- **PetitPrim** primitive models & obj loader [doc](docs/prim.md) [dl](prim.mjs)
+- **PetitCol** color convertion [doc](docs/col.md) [dl](col.mjs)
 
 ### SVG
-- PetitSVG WIP
+- **PetitSVG** SVG path manipulation ⛓ WIP
 
 ### WebAudio
-- PetitAudio WIP
+- **PetitAudio** WebAudio wrapper ⛓ WIP
 
 ## License
 MIT License
