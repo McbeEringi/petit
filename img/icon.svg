@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128">
+	<desc>Petit icon</desc>
+	<g style="fill:none;stroke:#63c;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;" transform="translate(64,64)">
+		<path d="M-48,48v-48a48,48,0,1,1,96,0"/>
+		<g transform="rotate(150)">
+			<path d="M-48,0a48,48,0,1,1,96,0h-88"/>
+			<path d="M-24,-12v28a12,12,0,0,0,12,12m12,0v.000000001m0,-12v-16" transform="scale(-1)"/>
+			<path d="M-24,-12v28a12,12,0,0,0,12,12m12,0v.000000001m0,-12v-16"/>
+		</g>
+	</g>
+</svg>
