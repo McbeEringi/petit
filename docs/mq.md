@@ -13,7 +13,7 @@
 		creates same matrix from current matrix
 	- get() => mat *Float32Array(16)*  
 		exports matrix as Float32Array
-	- mul( matrix=this mat *Class* or *ArrayLike(16)* ) => this 
+	- mul( matrix=this mat *Class* or *ArrayLike(16)* ) => this  
 		calcs mul of current matrix and arg matrix  
 		mathmatical `AB` equals to `B.mul(A)`
 	- inv() => this  
