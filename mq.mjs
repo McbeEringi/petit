@@ -1,12 +1,12 @@
 //special thenks to wgld.org
 const
-norm=w=>(x=>x?w.map(y=>y/x):w)(Math.hypot(...w)),
+norm=w=>(x=>x?[...w].map(y=>y/x):[...w])(Math.hypot(...w)),
 cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],
 mat=class{
 	constructor(w=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]){this.w=new Float32Array(w);return this;}
 	copy(){return new mat(this.w);}
 	get(){return this.w;}
-	mul(w){this.w.set([...'0123'.repeat(4)].map((x,i)=>new Array(4).fill().reduce((y,_,j)=>y+this.w[i-x+j]*(w||this).w[j*4+x],0)));return this;}// AB == B.mul(A)
+	mul(w){this.w.set([...'0123'.repeat(4)].map((x,i)=>new Array(4).fill().reduce((y,_,j)=>y+(this.w)[i-x+j]*((w||this).w||w)[j*4+x],0)));return this;}// AB == B.mul(A)
 	transpose(){this.w.set(this.w.map((_,i)=>this.w[[0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15][i]]));return this;}
 	inv(){
 		const x=this.w,
@@ -22,8 +22,8 @@ mat=class{
 		]);
 		return this;
 	}
-	scale(w=[]){if(typeof w=='number')w=[w,w,w];return this.mul([w[0]??1,0,0,0 ,0,w[1]??1,0,0, 0,0,w[2]??1,0, 0,0,0,1]);}
-	translate(w=[]){return this.mul([1,0,0,0, 0,1,0,0, 0,0,1,0, w[0]??1,w[1]??1,w[2]??1,1]);}
+	scale(w=1){const f=x=>w[x]!=void 0?w[x]:w!=void 0?w:1;return this.mul([f(0),0,0,0 ,0,f(1),0,0, 0,0,f(2),0, 0,0,0,1]);}
+	translate(w=[]){return this.mul([1,0,0,0, 0,1,0,0, 0,0,1,0, w[0]||0,w[1]||0,w[2]||0,1]);}
 	rot(a=[0,1,0],t=0){const s=Math.sin(t),c=Math.cos(t),ic=1-c;a=norm(a);
 		return this.mul([c+a[0]*a[0]*ic,a[0]*a[1]*ic+a[2]*s,a[2]*a[0]*ic-a[1]*s,0, a[0]*a[1]*ic-a[2]*s,c+a[1]*a[1]*ic,a[1]*a[2]*ic+a[0]*s,0, a[2]*a[0]*ic+a[1]*s,a[1]*a[2]*ic-a[0]*s,c+a[2]*a[2]*ic,0, 0,0,0,1]);
 	}
@@ -37,7 +37,7 @@ mat=class{
 	ortho(l,r,t,b,n,f){const w=1/(r-l),h=1/(t-b),d=1/(f-n);return this.mul([2*w,0,0,0, 0,2*h,0,0, 0,0,-2*d,0, -(l+r)*w,-(t+b)*h,-(f+n)*d,1]);}//Left Right Top Bottom Near Far
 },
 qtn=class{
-	constructor(w){this.w=new Float32Array(w);return this;}
+	constructor(w=[1,0,0,0]){this.w=new Float32Array(w);return this;}
 	copy(){return new PetitQ(this.w);}
 	getIm(){return [...this.w].slice(1);}
 	mul(w){
@@ -47,12 +47,12 @@ qtn=class{
 	}
 	norm(){this.w.set(norm(this.w));return this;}
 	conj(){this.w.set(this.w.map((x,i)=>i?-x:x));return this;}
-	rot(a=[0,0,0],t=1){const s=Math.sin(t*.5),c=Math.cos(t*.5);return this.mul([c,...norm(a).map(x=>x*s)]);}
+	rot(a=[0,1,0],t=1){const s=Math.sin(t*.5),c=Math.cos(t*.5);return this.mul([c,...norm(a).map(x=>x*s)]);}
 	roteul(t=[0,0,0]){t=t.map(x=>[Math.cos(x*.5),Math.sin(x*.5)]);
 		return this.mul([t[2][0]*t[1][0]*t[0][0]+t[2][1]*t[1][1]*t[0][1], t[2][1]*t[1][0]*t[0][0]-t[2][0]*t[1][1]*t[0][1], t[2][0]*t[1][1]*t[0][0]+t[2][1]*t[1][0]*t[0][1], t[2][0]*t[1][0]*t[0][1]-t[2][1]*t[1][1]*t[0][0]]);
 	}
-	slerp(q=[1,0,0,0],x=.5){
-		q=q.w||q;let a=[...this.w].reduce((a,y,i)=>a+y*q[i],0),b=1-a*a;
+	slerp(q,x=.5){
+		q=(q||this).w||q;let a=[...this.w].reduce((a,y,i)=>a+y*q[i],0),b=1-a*a;
 		b>0&&(a=Math.acos(a),b=Math.sqrt(b),x=b<.0001?[.5,.5]:[Math.sin(a*(1-x))/b,Math.sin(a*x)/b],this.w.set(this.w.map((y,i)=>y*x[0]+q[i]*x[1])))
 		return this;
 	}
