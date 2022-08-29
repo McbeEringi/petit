@@ -1,6 +1,7 @@
 const
+add=(...w)=>(x=>w.reduce((a,y)=>10**x*y+a,0)/(10**x))(Math.max(0,...w.map(x=>(x=Math.log10(Math.abs(x-(x|0))),-Math[x>0?'ceil':'floor'](x))))),
 csys=(w,r)=>w.reduce((a,x)=>(
-	x.rel^r&&(x.rel=r,{m:[0,1],l:[0,1],h:[0],v:[1],z:[],c:[0,1,0,1,0,1],s:[0,1,0,1],q:[0,1,0,1],t:[0,1],a:[0,1,,,,0,1]}[x.cmd]).forEach((y,i)=>x.dat[i]+=r?-a[y]:a[y]),
+	x.rel^r&&(x.rel=r,{m:[0,1],l:[0,1],h:[0],v:[1],z:[],c:[0,1,0,1,0,1],s:[0,1,0,1],q:[0,1,0,1],t:[0,1],a:[0,1,,,,0,1]}[x.cmd]).forEach((y,i)=>x.dat[i]=add(x.dat[i],r?-a[y]:a[y])),
 	({h:[x.dat[0],0],v:[0,x.dat[0]],z:[a[2],a[3]]}[x.cmd]||x.dat.slice(-2)).forEach((y,i)=>a[i]=y+a[i]*r),
 	x.cmd=='m'&&(a[2]=a[0],a[3]=a[1]),a.push(x),a
 ),[0,0,0,0]).slice(4),
@@ -16,6 +17,6 @@ svg=class{
 	matrix(w=[1,0,0,0,1,0]){return this;}
 	rotate(t=0){const s=Math.sin(t),c=Math.cos(t);this.matrix([c,-s,0,s,c,0]);return this;}scale(x=1,y=1){this.matrix([x,0,0,0,y,0]);return this;}
 	skew(x=0,y=0){this.matrix([1,Math.tan(x),0,Math.tan(y),1,0]);return this;}translate(x=0,y=0){this.matrix([1,0,x,0,1,y]);return this;}
-	toString(){return this.d.reduce((a,x)=>(a.x+=(a.a==(a.a=x.rel?x.cmd:x.cmd.toUpperCase())?',':a.a)+x.dat.map((y,z)=>(z=(''+y).match(/\.(\d*[09]{6,})/),z?+y.toFixed(z[1].length-1):y)),a),{a:0,x:''}).x;}
+	toString(){return this.d.reduce((a,x)=>(a+=(x.rel?x.cmd:x.cmd.toUpperCase())+x.dat,a),'');}
 };
 export{svg};
