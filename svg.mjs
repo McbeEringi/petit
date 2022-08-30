@@ -24,7 +24,7 @@ svg=class{
 		));return this;//TODO: coord system compatable for WebGL
 	}
 	mat2d(w=[1,0, 0,1, 0,0]){return this.mat([w[0],w[1],0,0, w[2],w[3],0,0, 0,0,1,0, w[4],w[5],0,1]);}
-	rot(t=0){const s=Math.sin(t),c=Math.cos(t);return this.mat2d([c,-s, s,c, 0,0]);}scale(x=1,y=x){return this.mat2d([x,0, 0,y, 0,0]);}skew(x=0,y=0){return this.mat2d([1,Math.tan(y), Math.tan(x),1, 0,0]);}translate(x=0,y=0){return this.mat2d([1,0, 0,1, x,y]);}
+	rot(t=0){const s=Math.sin(t),c=Math.cos(t);return this.mat2d([c,-s, s,c, 0,0]);}scale(x=1,y=x){return this.mat2d([x,0, 0,y, 0,0]);}skew(x=0,y=x){return this.mat2d([1,Math.tan(y), Math.tan(x),1, 0,0]);}translate(x=0,y=x){return this.mat2d([1,0, 0,1, x,y]);}
 	toString(){return this.d.reduce((a,x)=>(a+=x.cmd.toUpperCase()+x.abs,a),'');}//TODO: relative export
 };
 export{calc,svg};
