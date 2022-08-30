@@ -6,7 +6,7 @@ mat=class{
 	constructor(w=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]){this.w=new Float32Array(w);return this;}
 	copy(){return new mat(this.w);}
 	get(){return this.w;}
-	mul(w){this.w.set([...'0123'.repeat(4)].map((x,i)=>new Array(4).fill().reduce((y,_,j)=>y+(this.w)[i-x+j]*((w||this).w||w)[j*4+x],0)));return this;}// AB == B.mul(A)
+	mul(w){this.w.set([...'0123'.repeat(4)].map((x,i)=>new Array(4).fill().reduce((y,_,j)=>y+(this.w)[i-x+j]*((w||this).w||w)[+x+j*4],0)));return this;}// AB == B.mul(A)
 	transpose(){this.w.set(this.w.map((_,i)=>this.w[[0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15][i]]));return this;}
 	inv(){
 		const x=this.w,
@@ -24,7 +24,7 @@ mat=class{
 	}
 	scale(w=1){const f=x=>w[x]!=void 0?w[x]:w!=void 0?w:1;return this.mul([f(0),0,0,0 ,0,f(1),0,0, 0,0,f(2),0, 0,0,0,1]);}
 	translate(w=[]){return this.mul([1,0,0,0, 0,1,0,0, 0,0,1,0, w[0]||0,w[1]||0,w[2]||0,1]);}
-	rot(a=[0,1,0],t=0){const s=Math.sin(t),c=Math.cos(t),ic=1-c;a=norm(a);
+	rot(t=0,a=[0,1,0],n=true){const s=Math.sin(t),c=Math.cos(t),ic=1-c;n&&(a=norm(a));
 		return this.mul([c+a[0]*a[0]*ic,a[0]*a[1]*ic+a[2]*s,a[2]*a[0]*ic-a[1]*s,0, a[0]*a[1]*ic-a[2]*s,c+a[1]*a[1]*ic,a[1]*a[2]*ic+a[0]*s,0, a[2]*a[0]*ic+a[1]*s,a[1]*a[2]*ic-a[0]*s,c+a[2]*a[2]*ic,0, 0,0,0,1]);
 	}
 	roteul(t=[0,0,0]){t=t.map(x=>[Math.cos(x),Math.sin(x)]);
