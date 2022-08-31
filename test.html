@@ -7,9 +7,9 @@
 </head>
 <body>
 	<style>
-		:root,body{position:relative;}
+		:root,body,.rel{position:relative;}
 		#ta{width:100%;resize:none;}
-		#log{white-space:pre-wrap;word-break:break-all;position:absolute;width:100%;pointer-events:none;opacity:.5;}
+		#log{white-space:pre-wrap;word-break:break-all;position:absolute;width:100%;pointer-events:none;opacity:.5;top:0;}
 	</style>
 	<textarea id="ta" spellcheck="false">const t=performance.now()/1000,s=Math.sin(t),c=Math.cos(t);
 return new svg(`
@@ -21,16 +21,17 @@ return new svg(`
 	//.mat(new mat().translate([-256,-256]).rot(t).translate([256,256]).lookat([0,-10,10],[0,-1,0]).pers(90,1,.1,100));
 </textarea>
 	<button id="btn">copy log</button><br>
-	<pre id="log"></pre>
+	<div class="rel">
+		<pre id="log"></pre>
+		<div id="img"></div>
+		</div>
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
 		import{calc,svg}from'./svg.mjs';
 		import{mat}from'./mq.mjs';
 		TA.editor(ta);
-		const img=new Image(),
-			draw=x=>img.src='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="'+x+'" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:4;"/></svg>'),
+		const draw=x=>img.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M0,0'+x+'" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:4;"/></svg>',
 			loop=()=>{try{draw(log.textContent=Function('svg','calc','mat',ta.value)(svg,calc,mat));}catch(e){log.textContent=e;}requestAnimationFrame(loop);};
-		document.body.append(img);
 		btn.onclick=()=>navigator.clipboard.writeText(log.textContent);
 		loop();
 	</script>
