@@ -16,6 +16,7 @@ PetitJS - set of *petit* and useful JS libs
 
 ### WebAudio
 - **PetitAudio** WebAudio wrapper ⛓ WIP
+- **PetitSMF** SMF(MIDI)file parser WIP
 
 ## License
 MIT License
