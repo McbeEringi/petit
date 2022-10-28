@@ -20,9 +20,9 @@ torus=(w=1,c,sx=16,sy=sx*2)=>fmt(new Array(sx+1).fill().flatMap((_,i)=>{let ip=i
 })),
 obj=(w,col)=>((
 	spl=(x,i)=>x.split(/\s+/,i).slice(1),spln=(...x)=>spl(...x).map(y=>+y),
-	core=({w,col=[1,1,1,1],_v=0,_vt=0,_vn=0}={},o=(w.match(/^o (.+)$/m)||[])[1],vt=(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3)),vn=(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4)),
+	core=({w,col=[1,1,1,1],_v=0,_vt=0,_vn=0}={},og=(w.match(/^[og] (.+)$/m)||[])[1],vt=(w.match(/^vt .+$/gm)||[]).map(x=>spln(x,3)),vn=(w.match(/^vn .+$/gm)||[]).map(x=>spln(x,4)),
 		v=(w.match(/^v .+$/gm)||[]).map((x,i,a)=>(a=col||[...hsv2rgb(i/a.length),1],x=spln(x),({3:_=>[x,a],4:_=>(x[3]=1/x[3],[x.slice(0,3).map(y=>y*x[3]),a]),6:_=>[x.slice(0,3),[...x.slice(3,6),1]]}[x.length])())),
 		set=[...new Set(w=(w.match(/^f .+$/gm)||[]).flatMap(x=>(x=spl(x),new Array(x.length-2).fill().flatMap((_,i)=>[x[0],x[1+i],x[2+i]]))))]
-	)=>({w:{...fmt(set.map(x=>(x=x.split('/'),[v[x[0]-1-_v][0],x[2]?vn[x[2]-1-_vn]:[0,0,0],v[x[0]-1-_v][1],x[1]?vt[x[1]-1-_vt]:[0,0]]))),i:(x=>w.map(y=>x.get(y)))(new Map(set.map(Array))),o},_v:v.length,_vt:vt.length,_vn:vn.length})
-)=>w.split(/\n(?=o)/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x,col})),a),[{}]).flatMap(x=>x.w&&x.w.i.length?[x.w]:[]))();
+	)=>({w:{...fmt(set.map(x=>(x=x.split('/'),[v[x[0]-1-_v][0],x[2]?vn[x[2]-1-_vn]:[0,0,0],v[x[0]-1-_v][1],x[1]?vt[x[1]-1-_vt]:[0,0]]))),i:(x=>w.map(y=>x.get(y)))(new Map(set.map(Array))),og},_v:v.length,_vt:vt.length,_vn:vn.length})
+)=>w.split(/\n(?=[og])/).reduce((a,x)=>(a.push(core({...a[a.length-1],w:x,col})),a),[{}]).flatMap(x=>x.w&&x.w.i.length?[x.w]:[]))();
 export{cube,sphere,torus,obj};

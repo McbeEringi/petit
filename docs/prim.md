@@ -48,6 +48,6 @@ all functions return formatted Object named `model`
 		const obj=await(await fetch('model.obj')).text(),
 			model=obj(obj);
 		console.log(model);
-		// model [{p,n,c,t,i,o:'object name'}...]
+		// model [{p,n,c,t,i,og:'object group name'}...]
 	})();
 	```
