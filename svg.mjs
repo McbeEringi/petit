@@ -1,6 +1,6 @@
 const
 calc=class{
-	constructor(w){if(!w)this.w=[0,0];else if(w.w)this.w=[...w.w];else{this.w=(+w).toExponential().split('e');this.w[1]-=Math.max(0,this.w[0].length-isNaN(this.w[0][0])-2);this.w[0]=+this.w[0].replace('.','');if(!this.w.every(Number.isInteger))throw`init failed. ${w}→${this.w}`;}return this;}
+	constructor(w){if(!+w)this.w=[0,0];else if(w.w)this.w=[...w.w];else{this.w=(+w).toExponential().split('e');this.w[1]-=Math.max(0,this.w[0].length-isNaN(this.w[0][0])-2);this.w[0]=+this.w[0].replace('.','');if(!this.w.every(Number.isInteger))throw`init failed. ${w}→${this.w}`;}return this;}
 	copy(){return new calc(this);}
 	add(w){w=w.w||new calc(w).w;this.w[0]=this.w[1]>w[1]?10**(this.w[1]-(this.w[1]=w[1]))*this.w[0]+w[0]:this.w[0]+10**(w[1]-this.w[1])*w[0];return this;}
 	mul(w){w=w.w||new calc(w).w;this.w[0]*=w[0];this.w[1]+=w[1];return this;}
@@ -19,6 +19,21 @@ svg=class{
 				({h:_=>x={...x,cmd:'l',abs:[x.abs[0],new calc()]},v:_=>x={...x,cmd:'l',abs:[new calc(),x.abs[0]]}}[x.cmd]||Array)(),//TODO: fix H V
 				x.rel&&adic[x.cmd].forEach((y,i)=>x.abs[i].add(a[y])),(x.cmd=='z'?[a[2],a[3]]:x.abs.slice(-2)).forEach((y,i)=>a[i]=y),x.cmd=='m'&&(a[2]=a[0],a[3]=a[1]),a.push(x),
 			a),[0,0,0,0]).slice(4);
+			// this.d=w.match(/[mlhvzcsqta]|-?\d*\.?\d+/ig).reduce((a,x,y)=>{
+			// 	const abs=()=>{
+			// 		[a.p[0],a.p[1]]=x.cmd=='z'?a.p.slice(2):x.abs.slice(-2);
+			// 		x.cmd=='m'&&(a.p[2]=a.p[0],a.p[3]=a.p[1]);
+			// 	};
+			// 	if(isNaN(x)){
+			// 		a.x&&core();
+			// 		a.x={cmd:y=x.toLowerCase(),rel:y==x,dat:[]};
+			// 		a.c=0;
+			// 	}else{
+			// 		a.w.push(new calc(x));
+			// 		a.x&&a.x.dat.length==adic[a.x.cmd]&&(core(),a.x={...a.x,dat:[]});
+					
+			// 	}
+			// },{x:null,c:0,w:[],a:[],p:[0,0,0,0]});
 		return this;
 	}
 	copy(){return new svg(this);}

@@ -35,7 +35,7 @@ return d.copy().translate(-256).scale(c,s).translate(256);	//.skew(x,y) .rot(t) 
 			loop=()=>{try{draw(log.textContent=Function('d','svg','calc','mat',ta.value)(d,svg,calc,mat));}catch(e){log.textContent=e;}requestAnimationFrame(loop);};
 		btn.onclick=()=>navigator.clipboard.writeText(log.textContent);
 		loop();
-		window.svg=svg;
+		window.svg=svg;window.d=d;
 	</script>
 </body>
 </html>
