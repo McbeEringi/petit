@@ -18,5 +18,8 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitAudio** WebAudio wrapper ⛓ WIP
 - **PetitSMF** SMF(MIDI)file parser WIP
 
+## Requirement
+iOS12~ equivalent web techs
+
 ## License
 MIT License
