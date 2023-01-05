@@ -5,7 +5,7 @@
 [zip.mjs](../zip.mjs)
 
 ## exports
-- ***async*** zip( files=[{ path *String*, blob *Blob* }...] *Array(N)*, callback({ pre:[ done *Number*, all *Number* ], post:[ done *Number*, all *Number* ] }) *Function* ) => Zip *Blob*  
+- ***async*** zip( files=[{ path *String*, blob *Blob*, date *Date* }...] *Array(N)*, callback({ pre:[ done *Number*, all *Number* ], post:[ done *Number*, all *Number* ] }) *Function* ) => Zip *Blob*  
 	create .zip archive without compression
 - dl( file={ name *String*, blob *Blob* } *Object* ) => undefined  
 	download blob to the device
