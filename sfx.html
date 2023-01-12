@@ -1,19 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
+	<input type="file" id="inp" webkitdirectory><button id="btn">run</button>
 	<script type="module">
 		import * as pz from'./zip.mjs';
-		pz.dl({blob:await pz.sfx([
-			{path:'pp/world.txt',blob:new Blob(['Hello world!'])},
-			{path:'pp/hoge.txt',blob:new Blob(['Hello hoge!'])},
-			{path:'pp/hoge/fuga.txt',blob:new Blob(['Hello hoge fuga!'])}
-		])});
+		btn.onclick=async()=>pz.dl({blob:await pz.sfx([...inp.files].map(x=>({path:x.webkitRelativePath,blob:x})))});
 	</script>
 </body>
 </html>
