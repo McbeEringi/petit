@@ -7,7 +7,7 @@
 ## exports
 - ***async*** zip( files=[{ path *String*, blob *Blob*, date *Date* }...] *Array(N)*, { progress({ pre:[ done *Number*, all *Number* ], post:[ done *Number*, all *Number* ] }) *Function*, offset:[ pre *Number*, post *Number* ] *Array(2)* } ) => Zip *Blob*  
 	create uncompressed .zip archive without compression
-- ***async*** unzip( zip *Blob* ) => [{ path *String*, blob *Blob*, date *Date* }...] *Array(N)*  
+- ***async*** unzip( zip *Blob or ArrayBuffer* ) => [{ path *String*, blob *Blob*, date *Date* }...] *Array(N)*  
 	disassemble uncompressed .zip archive
 - ***async*** sfx( *see zip()* )
 	create self extracting HTML file

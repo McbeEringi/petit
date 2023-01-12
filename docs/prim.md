@@ -51,3 +51,5 @@ all functions return formatted Object named `model`
 		// model [{p,n,c,t,i,og:'object group name'}...]
 	})();
 	```
+- col  
+	[petitCol](docs/col.md) as an Object
