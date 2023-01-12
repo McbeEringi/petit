@@ -5,10 +5,10 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
-	<input type="file" id="inp" webkitdirectory><button id="btn">run</button>
+	<input type="file" id="inp" webkitdirectory multiple><button id="btn">run</button>
 	<script type="module">
 		import * as pz from'./zip.mjs';
-		btn.onclick=async()=>pz.dl({blob:await pz.sfx([...inp.files].map(x=>({path:x.webkitRelativePath,blob:x})))});
+		btn.onclick=async()=>pz.dl({blob:await pz.sfx([...inp.files].map(x=>({path:x.webkitRelativePath||x.name,blob:x})))});
 	</script>
 </body>
 </html>
