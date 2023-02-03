@@ -31,9 +31,11 @@
 		(async w=>{
 			w=await fetch(url);
 			if(!w.ok)throw`${w.status} - ${w.statusText}`;
-			document.body.insertAdjacentHTML('afterbegin',marked.parse(await w.text())),
-			document.querySelectorAll('a[href$=".md"]:not([attr^="http"])').forEach(x=>x.setAttribute('href','?'+x.getAttribute('href').slice(0,-3))),
-			e.remove()
+			await(async x=>(
+				x.insertAdjacentHTML('afterbegin',marked.parse(await w.text())),
+				x.querySelectorAll('a[href$=".md"]:not([attr^="http"])').forEach(x=>x.setAttribute('href','?'+x.getAttribute('href').slice(0,-3))),
+				e.replaceWith(x)
+			))(document.createElement('div'));
 		})().catch(w=>e.textContent=w);
 	</script>
 </body>

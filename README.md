@@ -12,7 +12,8 @@ PetitJS - set of *petit* and useful JS libs
 
 ### Utility
 - **PetitCol** color convertion [doc](docs/col.md) [dl](col.mjs) *255B*
-- **PetitZip** zip gen & DL helper [doc](docs/zip.md) [dl](zip.mjs) *1.85kB*
+- **PetitZip** zip gen & DL helper [doc](docs/zip.md) [dl](zip.mjs) *1.89kB*
+- **PetitZipEx** zip extra features [doc](docs/zipex.md) [dl](zipex.mjs) *1.75kB*
 
 ### SVG
 - **PetitSVG** SVG path manipulation ⛓ WIP
