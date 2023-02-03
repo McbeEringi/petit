@@ -23,11 +23,12 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitSMF** SMF(MIDI)file parser WIP
 
 ## Planning
-- Wav 
+- Wav (🔜™️)
 - MP3 ID3
 - MIDI
 - SVG
 - Zip deflate
+- OTF SFNT
 
 ## Requirement
 iOS12~ equivalent web techs
