@@ -40,7 +40,7 @@ all functions return formatted Object named `model`
 	console.log(model);
 	// model {p,n,c,t,i}
 	```
-- obj( obj *String*, color=[1,1,1,1] *Array(4)*) => model *Object*  
+- obj( obj *String*, color=[1,1,1,1] *Array(4)*) => [ model *Object* ... ]  
 	create model from OBJ string
 	```js
 	import{obj}from'./prim.mjs';
