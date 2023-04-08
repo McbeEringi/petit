@@ -11,7 +11,7 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitPrim** primitive models & obj loader [doc](docs/prim.md) [dl](prim.mjs) *2.34kB*
 
 ### Utility
-- **PetitCol** color convertion [doc](docs/col.md) [dl](col.mjs) *255B*
+- **PetitCol** color convertion [doc](docs/col.md) [dl](col.mjs) *395B*
 - **PetitZip** zip gen & DL helper [doc](docs/zip.md) [dl](zip.mjs) *1.89kB*
 - **PetitZipEx** zip extra features [doc](docs/zipex.md) [dl](zipex.mjs) *1.75kB*
 
@@ -24,9 +24,7 @@ PetitJS - set of *petit* and useful JS libs
 
 ## Planning
 - MP3 ID3
-- MIDI
-- SVG
-- Zip deflate
+- deflate
 - OTF SFNT
 
 ## Requirement
