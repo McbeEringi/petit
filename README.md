@@ -19,11 +19,10 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitSVG** SVG path manipulation ⛓ WIP
 
 ### WebAudio
-- **PetitAudio** WebAudio wrapper ⛓ WIP
+- **PetitAudio** WebAudio functions [doc](docs/audio.md) [dl](audio.mjs) *1.36kB*
 - **PetitSMF** SMF(MIDI)file parser WIP
 
 ## Planning
-- Wav (🔜™️)
 - MP3 ID3
 - MIDI
 - SVG
