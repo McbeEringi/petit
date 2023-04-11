@@ -2,7 +2,7 @@
 const
 gl=class{
 	constructor(c=document.createElement('canvas')){
-		this.gl=c.getContext('webgl2')||c.getContext('webgl');
+		this.gl=c.getContext('webgl2')||c.getContext('webgl');// TODO: legacy webgl VAO support
 		return this;
 	}
 	resize(){}
