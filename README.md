@@ -14,14 +14,14 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitCol** color convertion [doc](docs/col.md) [src](col.mjs) *395B*
 - **PetitZip** zip gen & DL helper [doc](docs/zip.md) [src](zip.mjs) *1.89kB*
 - **PetitZipEx** zip extra features [doc](docs/zipex.md) [src](zipex.mjs) *1.75kB*
-- **PetitRiff** RIFF parser WIP ~~doc~~ [src](riff.mjs) *1.297B*
+- **PetitRiff** RIFF parser WIP ~~doc~~ [src](riff.mjs) *297B*
 
 ### SVG
 - **PetitSVG** SVG path manipulation ⛓ WIP
 
 ### WebAudio
 - **PetitAudio** WebAudio functions [doc](docs/audio.md) [src](audio.mjs) *1.36kB*
-- **PetitSMF** SMF(MIDI)file parser WIP ~~doc~~ [src](riff.mjs) *1.297B*
+- **PetitSMF** SMF(MIDI)file parser WIP ~~doc~~ [src](riff.mjs) *1.33kB*
 
 ## Planning
 - MP3 ID3
