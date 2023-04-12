@@ -12,4 +12,4 @@ sfx=(w,c)=>(async h=>new Blob([h,await zip.zip(w,{...c,offset:[new Blob([h]).siz
 	f,r,n,w,e=x=>document.createElement(x),ea=(x,...y)=>(x.append(...y),x),oa=(x,y)=>Object.assign(x,y),b=x=>x&&x.constructor.name=='Blob',
 	c=(r,n,w)=>ea(oa(e(r),{textContent:n}),oa(e('button'),{textContent:'💾',onclick:async()=>f.d(b(w.blob)?{name:n,blob:w.blob}:{name:n+'.zip',blob:await f.z(((f,w)=>f(f,w))((f,w)=>Object.values(w).flatMap(x=>b(x.blob)?[x]:f(f,x)),w))})}))
 )=>ea(e(r),ea(e('details'),c('summary',n,w),Object.entries(w).reduce((a,x)=>ea(a,b(x[1].blob)?c('li',...x):f.x(f,'li',...x)),e('ul'))))}});</script></body></html><!--`);
-export{...zip,unzip,sfx};
+export{zip,unzip,sfx};

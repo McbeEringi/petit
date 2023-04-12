@@ -1,5 +1,5 @@
 const
-smfin=w=>((w,r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p],)=>r(0,4)==0x4d546864?{
+smfin=w=>((w,r=(o,l)=>1<l?w.slice(o,o+l).reduce((a,x)=>a<<8|x):w[o])=>r(0,4)==0x4d546864?{
 	header:{format:r(8,2),division:r(12)&0x80?[0x80-(r(12)&0x7f),r(13)]:r(12,2)},
 	tracks:[...Array(r(10,2))].reduce((a,_)=>(a.a.push(a.r(4)==0x4d54726b?((p=a.r(4)+a.p,dt,ch,x,b=[])=>{
 		if(r(p-3,3)!=0xff2f00)return'EOT not found.';
@@ -24,12 +24,12 @@ smfin=w=>((w,r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p],)=>r(0,4)==0
 		a:[],p:8+r(4,4),n(){let x=0;while(1){x=x<<7|r(this.p)&0x7f;if(~r(this.p++)&0x80)return x;}},
 		r(l=1){return r(this.p,l,this.p+=l);},ro(a,...x){return x.reduce((a,x)=>(a[x]=this.r(),a),a);}
 	}).a
-}:'MThd not found.')([...new Uint8Array(w)]),
+}:'MThd not found.')(new Uint8Array(w)),
+
 smfout=w=>1,
 smf=class{
 	constructor(w){
 		({header:{format:1,division:480},tracks:[[]]})
 	}
 }
-
-export{smf};
+export{smfin};

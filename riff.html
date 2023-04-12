@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
+</head>
+<body>
+	<input type="file" id="inp" class="zab"> <button id="btn" class="zab bgca">run</button>
+	<script type="module">
+		import{riff}from'./riff.mjs';
+		let t0;
+		btn.onclick=async _=>console.log(riff([await new Response(inp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+	</script>
+</body>
+</html>
