@@ -3,39 +3,65 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>PetitSVG test</title>
+	<title>Petit test</title>
+
+	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
 </head>
 <body>
 	<style>
-		:root,body,.rel{position:relative;}
-		#ta{width:100%;resize:none;}
-		#log{white-space:pre-wrap;word-break:break-all;position:absolute;width:100%;pointer-events:none;opacity:.5;top:0;}
-		@media(min-width:640px){#ta{white-space:pre;}}
+		textarea{width:100%;resize:none;white-space:pre;}
+		pre{white-space:pre-wrap;word-break:break-all;}
 	</style>
-	<textarea id="ta" spellcheck="false">const t=performance.now()/1000,s=Math.sin(t),c=Math.cos(t);
+	<script>self.t0=0;</script>
+	<h1>samples</h1>
+	<hr>
+	<h2>svg</h2>
+	function(d,svg,calc,mat){
+	<textarea id="svgta" spellcheck="false" class="zab">const t=performance.now()/1000,s=Math.sin(t),c=Math.cos(t);
 return d.copy().translate(-256).scale(c,s).translate(256);	//.skew(x,y) .rot(t) .mat2d(a,b,c,d,tx,ty) .mat(4x4matrix)
 //return d.copy().mat(new mat().translate([-256,-256]).rot(t).translate([256,256]).lookat([0,-10,10],[0,-1,0]).pers(90,1,.1,100));
-</textarea>
-	<button id="btn">copy log</button><br>
-	<div class="rel">
-		<pre id="log"></pre>
-		<div id="img"></div>
+</textarea>}<br>
+	<button id="svgbtn" class="zab bgca">copy log</button><br>
+	<div style="overflow:hidden;position:relative;">
+		<pre id="svglog" style="position:absolute;pointer-events:none;opacity:.5;"></pre>
+		<div id="svgimg"></div>
 	</div>
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta+.mjs';
 		import{calc,svg}from'./svg.mjs';
 		import{mat}from'./mq.mjs';
-		TA.editor(ta);
-		const draw=x=>img.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M0,0'+x+'" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:4;"/></svg>',
+		TA.editor(svgta);
+		const draw=x=>svgimg.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M0,0'+x+'" style="fill:none;stroke:var(--fc);stroke-linecap:round;stroke-linejoin:round;stroke-width:4;"/></svg>',
 			d=new svg(`
 				M259.99 119.4c-77.352 7.981-111.08 33.197-144.27 60.163m27.319-21.18c-43.042 27.923-78.118 111.25-64.154 159.62m-2.7626-55.559c-6.52 0.686-8.1285 84.177 22.715 97.919m284.6-187.4c-14.081-28.148-85.387-61.851-155.37-48.345m213.16 137.52c24.169 11.679-38.956-114.36-109.44-122.9m96.544 204.55c23.776 15.908 21.297-67.605 8.902-100.37m-189.53-121.7c33.5-108.22 89.221-74.081 29.882-29.708m-106.5 59.689c-6.982-22.789-130.47 67.454-104.92 161.88m253.53-181.13c-39.661-9.984-96.673-11.353-133.44 6.66m268.8 180.61c6.642-61.71-41.394-98.787-51.04-141.85m-304.87 170.53c0 14.953 18.923 14.427 29.468 14.427m309.41-73.669c6.859 41.157 6.91 52.789-10.436 87.482m-26.706-97.918c17.804 2.762 7.981 41.438 32.231 49.112m-80.701-83.018c-52.337 16.325-49.192-17.886-71.255 4.23 0 0 4.371 2.657 6.861-2.56 1.641-3.438-2.284-5.077-0.347-13.046 0 0 0 5.43 11.756 3.76m-84.559-10.354c-26.6 39.58 39.905 8.398 59.687-17.607m-52.352 30.04c-40.924-9.655-124.78 67.855-94.92 89.908m58.153-73.988c-23.688-21.702-75.543 39.997-77.703 65.263m262.15-69.059c16.519 1.835 34.665 34.317 39.597 49.112m-114.8-185.4c-79.829-11.894-148.87 19.031-176.8 82.466m54.71 123.69c-6.561-8.623 29.243-31.305 59.607-30.026m128.59 6.955c-20.11-13.32-58.08-8.554-46.564-3.388m-87.614 19.474c-6.805-6.804-2.767 37.191-2.767 37.191m96.509-38.524c-1.996-10.03-1.215 32.746 1 34.803m-96.047 19.735c-20.398 32.37 2.438 29.709 1.944 20.851
 				M376.26 382.33c-9.222-6.014 17.766-19.265 25.162-5.09 25.732 49.312-136.28 77.742-71.88 53.488 54.731-20.614 54.255-43.483 46.718-48.398z
 				M366.44 179.5c13.848 15.199-41.033 24.523-74.863 21.973m-170.26 1.893c2.636-21.851 46.579-61.152 50.277-43.642m216.74 23.06c4.078 8.494-25.975 16.493-36.36 17.721m62.245 21.581c15.088 16.393 31.483 51.665 19.472 68.196
 			`),
-			loop=()=>{try{draw(log.textContent=Function('d','svg','calc','mat',ta.value)(d,svg,calc,mat));}catch(e){log.textContent=e;}requestAnimationFrame(loop);};
-		btn.onclick=()=>navigator.clipboard.writeText(log.textContent);
+			loop=()=>{try{draw(svglog.textContent=Function('d','svg','calc','mat',svgta.value)(d,svg,calc,mat));}catch(e){svglog.textContent=e;}requestAnimationFrame(loop);};
+		svgbtn.onclick=()=>navigator.clipboard.writeText(svglog.textContent);
 		loop();
-		window.svg=svg;window.d=d;
 	</script>
+	<hr>
+	<h2>sfx</h2>
+	<input type="file" id="sfxinp" class="zab" webkitdirectory multiple> <button id="sfxbtn" class="zab bgca">run</button>
+	<script type="module">
+		import * as pz from'./zipex.mjs';
+		sfxbtn.onclick=async()=>pz.zip.dl({name:'sfx.html',blob:await pz.sfx([...sfxinp.files].map(x=>({path:x.webkitRelativePath||x.name,blob:x})))});
+	</script>
+	<hr>
+	<h2>smf</h2>
+	<input type="file" id="smfinp" class="zab"> <button id="smfbtn" class="zab bgca">run</button>
+	<script type="module">
+		import{smfin}from'./smf.mjs';
+		smfbtn.onclick=async _=>console.log(smfin([await new Response(smfinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+	</script>
+	<hr>
+	<h2>riff</h2>
+	<input type="file" id="riffinp" class="zab"> <button id="riffbtn" class="zab bgca">run</button>
+	<script type="module">
+		import{riff}from'./riff.mjs';
+		riffbtn.onclick=async _=>console.log(riff([await new Response(riffinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+	</script>
+
 </body>
 </html>
