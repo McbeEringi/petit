@@ -15,6 +15,7 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitZip** zip gen & DL helper [doc](docs/zip.md) [src](zip.mjs) *1.89kB*
 - **PetitZipEx** zip extra features [doc](docs/zipex.md) [src](zipex.mjs) *1.75kB*
 - **PetitRiff** RIFF parser WIP ~~doc~~ [src](riff.mjs) *297B*
+- **PetitSJIS** Shift-JIS encoder & decoder [doc](docs/sjis.md) [src](riff.mjs) *596B*
 
 ### SVG
 - **PetitSVG** SVG path manipulation ⛓ WIP
