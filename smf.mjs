@@ -1,5 +1,5 @@
 const
-smfin=w=>((w,r=(o,l)=>1<l?w.slice(o,o+l).reduce((a,x)=>a<<8|x):w[o])=>r(0,4)==0x4d546864?{
+smfin=w=>((w,r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p])=>r(0,4)==0x4d546864?{
 	header:{format:r(8,2),division:r(12)&0x80?[0x80-(r(12)&0x7f),r(13)]:r(12,2)},
 	tracks:[...Array(r(10,2))].reduce((a,_)=>(a.a.push(a.r(4)==0x4d54726b?((p=a.r(4)+a.p,dt,ch,x,b=[])=>{
 		if(r(p-3,3)!=0xff2f00)return'EOT not found.';

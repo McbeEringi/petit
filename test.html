@@ -6,6 +6,7 @@
 	<title>Petit test</title>
 
 	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/style.css">
+	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/comp.css">
 </head>
 <body>
 	<style>
@@ -42,26 +43,31 @@ return d.copy().translate(-256).scale(c,s).translate(256);	//.skew(x,y) .rot(t) 
 		loop();
 	</script>
 	<hr>
-	<h2>sfx</h2>
-	<input type="file" id="sfxinp" class="zab" webkitdirectory multiple> <button id="sfxbtn" class="zab bgca">run</button>
-	<script type="module">
-		import * as pz from'./zipex.mjs';
-		sfxbtn.onclick=async()=>pz.zip.dl({name:'sfx.html',blob:await pz.sfx([...sfxinp.files].map(x=>({path:x.webkitRelativePath||x.name,blob:x})))});
-	</script>
-	<hr>
-	<h2>smf</h2>
-	<input type="file" id="smfinp" class="zab"> <button id="smfbtn" class="zab bgca">run</button>
-	<script type="module">
-		import{smfin}from'./smf.mjs';
-		smfbtn.onclick=async _=>console.log(smfin([await new Response(smfinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
-	</script>
-	<hr>
-	<h2>riff</h2>
-	<input type="file" id="riffinp" class="zab"> <button id="riffbtn" class="zab bgca">run</button>
-	<script type="module">
-		import{riff}from'./riff.mjs';
-		riffbtn.onclick=async _=>console.log(riff([await new Response(riffinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
-	</script>
-
+	<div class="stuff">
+		<div>
+			<h2>sfx</h2>
+			<input type="file" id="sfxinp" class="zab" webkitdirectory multiple> <button id="sfxbtn" class="zab bgca">run</button>
+			<script type="module">
+				import * as pz from'./zipex.mjs';
+				sfxbtn.onclick=async()=>pz.zip.dl({name:'sfx.html',blob:await pz.sfx([...sfxinp.files].map(x=>({path:x.webkitRelativePath||x.name,blob:x})))});
+			</script>
+		</div>
+		<div>
+			<h2>smf</h2>
+			<input type="file" id="smfinp" class="zab"> <button id="smfbtn" class="zab bgca">run</button>
+			<script type="module">
+				import{smfin}from'./smf.mjs';
+				smfbtn.onclick=async _=>console.log(smfin([await new Response(smfinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+			</script>		
+		</div>
+		<div>
+			<h2>riff</h2>
+			<input type="file" id="riffinp" class="zab"> <button id="riffbtn" class="zab bgca">run</button>
+			<script type="module">
+				import{riff}from'./riff.mjs';
+				riffbtn.onclick=async _=>console.log(riff([await new Response(riffinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+			</script>		
+		</div>
+	</div>
 </body>
 </html>
