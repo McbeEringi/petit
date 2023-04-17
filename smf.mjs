@@ -1,95 +1,47 @@
 import{sjis}from'./sjis.mjs';
 const
-smfin=w=>((w,r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p])=>r(0,4)==0x4d546864?{
-	header:{format:r(8,2),division:r(12)&0x80?[0x80-(r(12)&0x7f),r(13)]:r(12,2)},
-	tracks:[...Array(r(10,2))].reduce((a,_)=>(a.a.push(a.r(4)==0x4d54726b?((p=a.r(4)+a.p,dt,ch,x,b=[])=>{
-		if(r(p-3,3)!=0xff2f00)return'EOT not found.';
-		while(a.p<p){
-			dt=a.n();(x=r(a.p))&0x80?(_=x,a.p++):x=_;ch=x&0xf;
-			b.push({dt,...[
-				_=>a.ro({ch,name:'noteOff'},'note','vel'),
-				_=>a.ro({ch,name:'noteOn'},'note','vel'),
-				_=>a.ro({ch,name:'polyPress'},'note','vel'),
-				_=>a.ro({ch,name:'ctrl'},'ctrl','value'),
-				_=>a.ro({ch,name:'prg'},'prg'),
-				_=>a.ro({ch,name:'chPress'},'vel'),
-				_=>a.ro({ch,name:'bend',value:(a.r()|(a.r()<<7))-0x2000}),
-				{
-					0:_=>({name:'sysEx0',data:[0xf0,..._()]}),7:_=>({name:'sysEx7',data:_()}),
-					15:_=>({name:'meta',type:a.r()&0x7f,data:_()})
-				}[ch]
-			][x>>4&0b111]((_=a.n())=>w.slice(a.p,a.p+=_))});
-		}
-		return b;
-	})():'MTrk not found.'),a),{
-		a:[],p:8+r(4,4),n(){let x=0;while(1){x=x<<7|r(this.p)&0x7f;if(~r(this.p++)&0x80)return x;}},
-		r(l=1){return r(this.p,l,this.p+=l);},ro(a,...x){return x.reduce((a,x)=>(a[x]=this.r(),a),a);}
-	}).a
-}:'MThd not found.')(new Uint8Array(w)),
-smfde=w=>((
-	d=[...Array(16)],
-	sj=new sjis()
-)=>(
-	w.tracks=w.tracks.map(w=>(d=d.map(_=>new Array(128).fill(null)),w.reduce((a,x)=>(
-		x.t=(a.t+=x.dt),delete x.dt,
-		({
-			...(_=>({
-				noteOn:_(!x.vel),
-				noteOff:_(1),
-				polyPress:_(!x.vel)
-			}))(e=>(_={t:x.t,vel:x.vel})=>(
-				d[x.ch][x.note]?d[x.ch][x.note].seq.push(_):a.a.push(d[x.ch][x.note]={ch:x.ch,name:'note',note:x.note,t:x.t,seq:[_]}),
-				e&&(d[x.ch][x.note]=null)
-			)),
-			
-			meta:_=>((0<x.type&&x.type<8?
-				(_=>(x.type=[,'text','copyright','name','instrument','lyric','marker','queue'][x.type],x.data=sj.decode(x.data))):
-				{
-					0x2f:_=>x.type='eot',
-					0x51:_=>(x.type='bpm',x.data=6e7/(x.data[0]<<16|x.data[1]<<8|x.data[2])),
-					0x58:_=>x.type='beat',
-					0x59:_=>(x.type='key',x.data={key:x.data[0],minor:x.data[1]})
-				}[x.type]||(_=>_))(),a.a.push(x))
-		}[x.name]||(_=>a.a.push(x)))(),
-		a
-	),{a:[],t:0}).a))
-))(),
-
 smf=class{
 	constructor(w){this.sjis=new sjis();w&&this.import(w);}
 	import(w){
 		w=new Uint8Array(w);
-		const
-		r=(p,l)=>1<l?w.slice(p,p+l).reduce((a,x)=>a<<8|x):w[p],
-		d=[...Array(16)];
-
+		const rr=(p,l)=>w.slice(p,p+l),r=(p,l)=>1<l?rr(p,l).reduce((a,x)=>a<<8|x):w[p];
 		if(r(0,4)!=0x4d546864)throw'MThd not found.';
 		this.header={format:r(8,2),division:r(12)&0x80?[0x80-(r(12)&0x7f),r(13)]:r(12,2)};
 		this.tracks=[...Array(r(10,2))].reduce(a=>{
 			if(a.r(4)!=0x4d54726b)throw'MTrk not found.';
-			let p=a.r(4)+a.p,t=0,ch,rs,x,b=[];
-			// if(r(p-3,3)!=0xff2f00)throw`EOT not found at end of track${tn+1}.`;
+			let p=a.r(4)+a.p,t=0,ch,ty,rs,x=[],d=[...Array(16)].map(_=>Array(128).fill(null));
+			// if(r(p-3,3)!=0xff2f00)console.warn(`EOT not found at end of track.`);
 			while(a.p<p){
-				t+=a.n();(x=r(a.p))&0x80?(rs=x,a.p++):x=rs;ch=x&0xf;
-				b.push({t,...[
-					_=>a.ro({ch,name:'noteOff'},'note','vel'),
-					_=>a.ro({ch,name:'noteOn'},'note','vel'),
-					_=>a.ro({ch,name:'polyPress'},'note','vel'),
+				t+=a.n();
+				(_=>(_&0x80?(_!=0xff&&(rs=_),a.p++):_=rs,ch=_&0xf,ty=_>>4&0b111))(r(a.p));
+				(ty<3?(nn=a.r(),vel=a.r())=>(
+					d[ch][nn]||x.push(d[ch][nn]={ch,name:'note',nn,t,seq:[]}),d[ch][nn].seq.push({t,vel}),
+					(!ty||!vel)&&(d[ch][nn]=null)
+				):_=>x.push([,,,
 					_=>a.ro({ch,name:'ctrl'},'ctrl','value'),
 					_=>a.ro({ch,name:'prg'},'prg'),
 					_=>a.ro({ch,name:'chPress'},'vel'),
 					_=>a.ro({ch,name:'bend',value:(a.r()|(a.r()<<7))-0x2000}),
 					{
-						0:_=>({name:'sysEx0',data:[0xf0,..._()]}),7:_=>({name:'sysEx7',data:_()}),
-						15:_=>({name:'meta',type:a.r()&0x7f,data:_()})
+						0:_=>({name:'sysEx0',data:[0xf0,...a.rr()]}),7:_=>({name:'sysEx7',data:a.rr()}),
+						15:(x=[a.r(),a.rr()])=>((x[0]&&x[0]<8?
+								_=>x=[[,'text','copyright','name','instrument','lyric','marker','queue'][x[0]],this.sjis.decode(x[1])]
+							:{
+								0x2f:_=>x[0]='eot',
+								0x51:_=>x=['bpm',6e7/(x[1][0]<<16|x[1][1]<<8|x[1][2])],
+								0x58:_=>x[0]='beat',
+								0x59:_=>x=['key',{key:x[1][0],minor:x[1][1]}]		
+							}[x[0]]||(_=>_))(),
+							{name:'meta',type:x[0],data:x[1]}
+						)
 					}[ch]
-				][x>>4&0b111]((_=a.n())=>w.slice(a.p,a.p+=_))});
+				][ty]()))();
 			}
-			a.a.push(b);
+			a.a.push(x);
 			return a;
 		},{
 			a:[],p:8+r(4,4),n(){let x=0;while(1){x=x<<7|r(this.p)&0x7f;if(~r(this.p++)&0x80)return x;}},
-			r(l=1){return r(this.p,l,this.p+=l);},ro(a,...x){return x.reduce((a,x)=>(a[x]=this.r(),a),a);}
+			r(l=1){return r(this.p,l,this.p+=l);},rr(l=this.n()){return l?rr(this.p,l,this.p+=l):null;},ro(a,...x){return x.reduce((a,x)=>(a[x]=this.r(),a),a);}
 		}).a;
 		return this;
 	}
