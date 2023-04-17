@@ -29,8 +29,12 @@
 			<h2>smf</h2>
 			<input type="file" id="smfinp" class="zab"> <button id="smfbtn" class="zab bgca">run</button>
 			<script type="module">
-				import{smfin}from'./smf.mjs';
-				smfbtn.onclick=async _=>console.log(smfin([await new Response(smfinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
+				import{smf}from'./smf.mjs';
+				smfbtn.onclick=async _=>(
+					t0=performance.now(),
+					_=new smf(await new Response(smfinp.files[0]).arrayBuffer()),
+					console.log(_,performance.now()-t0)
+				);
 			</script>		
 		</div>
 		<div>
