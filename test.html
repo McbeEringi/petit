@@ -34,11 +34,15 @@
 			<input type="file" id="smfinp" class="zab"> <button id="smflbtn" class="zab bgca">run</button>
 			<script type="module">
 				import{smf,player}from'./smf.mjs';
-				smflbtn.onclick=async _=>(
+				import{ab2wav}from'./audio.mjs';
+				import{dl}from'./zip.mjs';
+				smflbtn.onclick=async (_,oac)=>(
 					t0=performance.now(),
 					_=new smf(await new Response(smfinp.files[0]).arrayBuffer()),
 					console.log(_,performance.now()-t0),
+					//oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(actx.destination.channelCount,_.tracks.flat().reduce((a,x)=>Math.max(a,x.name=='note'?x.seq[x.seq.length-1].t:x.t),0)/_.header.division/140*60*44100,44100),
 					new player(actx).load(_).play()
+					//oac.startRendering(),oac.oncomplete=e=>dl({name:smfinp.files[0].name+'.wav',blob:new Blob([ab2wav(e.renderedBuffer)])})
 				);
 			</script>		
 		</div>

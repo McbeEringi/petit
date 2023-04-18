@@ -15,24 +15,24 @@ smf=class{
 				t+=a.n();
 				(_=>(_&0x80?(_!=0xff&&(rs=_),a.p++):_=rs,ch=_&0xf,ty=_>>4&0b111))(r(a.p));
 				(ty<3?(nn=a.r(),vel=a.r())=>(
-					d[ch][nn]||x.push(d[ch][nn]={ch,name:'note',nn,t,seq:[]}),d[ch][nn].seq.push({t,vel}),
+					d[ch][nn]||x.push(d[ch][nn]={t,ch,name:'note',nn,seq:[]}),d[ch][nn].seq.push({t,vel}),
 					(!ty||!vel)&&(d[ch][nn]=null)
 				):_=>x.push([,,,
-					_=>a.ro({ch,name:'ctrl'},'ctrl','value'),
-					_=>a.ro({ch,name:'prg'},'prg'),
-					_=>a.ro({ch,name:'chPress'},'vel'),
-					_=>a.ro({ch,name:'bend',value:(a.r()|(a.r()<<7))-0x2000}),
+					_=>a.ro({t,ch,name:'ctrl'},'ctrl','value'),
+					_=>a.ro({t,ch,name:'prg'},'prg'),
+					_=>a.ro({t,ch,name:'chPress'},'vel'),
+					_=>a.ro({t,ch,name:'bend',value:(a.r()|(a.r()<<7))-0x2000}),
 					{
-						0:_=>({name:'sysEx0',data:[0xf0,...a.rr()]}),7:_=>({name:'sysEx7',data:a.rr()}),
+						0:_=>({t,name:'sysEx0',data:[0xf0,...a.rr()]}),7:_=>({t,name:'sysEx7',data:a.rr()}),
 						15:(x=[a.r(),a.rr()])=>((x[0]&&x[0]<8?
-								_=>x=[[,'text','copyright','name','instrument','lyric','marker','queue'][x[0]],this.sjis.decode(x[1])]
+								_=>x=[[,'text','copyright','name','instrument','lyric','marker','queue'][x[0]],x[1]&&this.sjis.decode(x[1])]
 							:{
 								0x2f:_=>x[0]='eot',
 								0x51:_=>x=['bpm',6e7/(x[1][0]<<16|x[1][1]<<8|x[1][2])],
 								0x58:_=>x[0]='beat',
 								0x59:_=>x=['key',{key:x[1][0],minor:x[1][1]}]		
 							}[x[0]]||(_=>_))(),
-							{name:'meta',type:x[0],data:x[1]}
+							{t,name:'meta',type:x[0],data:x[1]}
 						)
 					}[ch]
 				][ty]()))();
