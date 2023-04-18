@@ -13,7 +13,11 @@
 		textarea{width:100%;resize:none;white-space:pre;}
 		pre{white-space:pre-wrap;word-break:break-all;}
 	</style>
-	<script>self.t0=0;self.actx=new(window.AudioContext||webkitAudioContext)();</script>
+	<script>
+		self.t0=0;
+		self.actx=new(window.AudioContext||webkitAudioContext)();
+		onunhandledrejection=e=>alert(e.reason);
+	</script>
 	<h1>samples</h1>
 	<hr>
 	<div class="stuff">
