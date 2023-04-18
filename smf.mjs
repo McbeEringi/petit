@@ -45,15 +45,58 @@ smf=class{
 		}).a;
 		return this;
 	}
-	export(){return (this.w);}
+	export(){return null;}
 },
 player=class{
 	constructor(actx){
 		this.actx=actx||new(window.AudioContext||webkitAudioContext)();
 		this.out=this.actx.destination;
 	}
-	set(){}
-	play(){}
+	load(w){this.smf=w;return this;}
+	play(t=0){
+		if(!this.smf)return this;
+		const t0=this.actx.currentTime,rt=x=>t0+(x-t)/this.smf.header.division/140*60;
+		const
+		noise=((w,x=this.actx.createBuffer(w,32767,this.actx.sampleRate))=>(Array(w).fill(
+			(w=>new Float32Array(32767).map(x=>(x=(w^w>>1)&1,w=w>>1|x<<14,!x)))(1)
+		).forEach((a,i)=>x.copyToChannel(a,i)),x))(this.actx.destination.channelCount),
+		fft=(w,l=12)=>{
+			w=w.flatMap(x=>new Array(2**l/w.length).fill().map(()=>[x,0]));
+			const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],cm=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
+				core=(n=w.length,t=-Math.PI/n,p=0,o=1,x,y)=>n==1?[w[p]]:(y=core(n/=2,t*=2,p+o,o*=2),x=core(n,t,p,o).map((z,i)=>[z,mul(y[i],cm(t*i))]),x.map(add).concat(x.map(sub)));
+			return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
+		},
+		pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1))));
+
+		this.smf.tracks.forEach((w,trk)=>w.forEach(x=>x.name=='note'&&t<=x.t&&(x.ch==9?(
+			bs=this.actx.createBufferSource(),
+			g0=this.actx.createGain(),
+			g1=this.actx.createGain()
+		)=>(
+			bs.buffer=noise,bs.playbackRate.value=(x.nn-35)/46*2,//35~81
+			g0.gain.setTargetAtTime(.01,rt(x.seq[0].t),.05),
+			g1.gain.setValueAtTime(0,rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,rt(x.seq[0].t)+.001),
+			g1.gain.setValueAtTime(0,rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,rt(x.seq[x.seq.length-1].t)),
+			[bs,g0,g1,this.out].reduce((a,x)=>(a.connect(x),x)),
+			// setTimeout(_=>console.log(x),rt(x.seq[0].t)*1000),
+			bs.start(rt(x.seq[0].t)),bs.stop(rt(x.seq[x.seq.length-1].t))
+		):(
+			osc=this.actx.createOscillator(),
+			g0=this.actx.createGain(),
+			g1=this.actx.createGain()
+		)=>(
+			osc.frequency.value=440*2**((x.nn-69)/12),
+			osc.setPeriodicWave(pwav[trk%pwav.length]),//osc.type='triangle',//['square','sawtooth','triangle'][x.ch%3],
+			g0.gain.setTargetAtTime(.01,rt(x.seq[0].t),.5),
+			g1.gain.setValueAtTime(0,rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,rt(x.seq[0].t)+.001),
+			g1.gain.setValueAtTime(0,rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,rt(x.seq[x.seq.length-1].t)),
+			[osc,g0,g1,this.out].reduce((a,x)=>(a.connect(x),x)),
+			// setTimeout(_=>console.log(x),rt(x.seq[0].t)*1000),
+			osc.start(rt(x.seq[0].t)),osc.stop(rt(x.seq[x.seq.length-1].t))
+		))()));
+
+		return this;
+	}
 	pause(){}
 	stop(){}
 };

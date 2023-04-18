@@ -13,7 +13,7 @@
 		textarea{width:100%;resize:none;white-space:pre;}
 		pre{white-space:pre-wrap;word-break:break-all;}
 	</style>
-	<script>self.t0=0;</script>
+	<script>self.t0=0;self.actx=new(window.AudioContext||webkitAudioContext)();</script>
 	<h1>samples</h1>
 	<hr>
 	<div class="stuff">
@@ -27,13 +27,14 @@
 		</div>
 		<div>
 			<h2>smf</h2>
-			<input type="file" id="smfinp" class="zab"> <button id="smfbtn" class="zab bgca">run</button>
+			<input type="file" id="smfinp" class="zab"> <button id="smflbtn" class="zab bgca">run</button>
 			<script type="module">
-				import{smf}from'./smf.mjs';
-				smfbtn.onclick=async _=>(
+				import{smf,player}from'./smf.mjs';
+				smflbtn.onclick=async _=>(
 					t0=performance.now(),
 					_=new smf(await new Response(smfinp.files[0]).arrayBuffer()),
-					console.log(_,performance.now()-t0)
+					console.log(_,performance.now()-t0),
+					new player(actx).load(_).play()
 				);
 			</script>		
 		</div>
