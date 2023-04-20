@@ -90,7 +90,7 @@ player=class{
 				64:_=>r.ch[w.ch].c.sus=w.value/127,// サスティン
 				100:_=>r.ch[w.ch].c.rpn=r.ch[w.ch].c.rpn&0xff00|w.value<<0,// RPN LSB
 				101:_=>r.ch[w.ch].c.rpn=r.ch[w.ch].c.rpn&0x00ff|w.value<<8,// RPN MSB
-				121:_=>r.rac(),// リセットオールコントローラー
+				121:_=>r.ch[w.ch].rac(),// リセットオールコントローラー
 				// 123:_=>_// オールノートオフ
 
 				38:{// DataEntry LSB
@@ -112,7 +112,7 @@ player=class{
 		core=(t0,rt=this.actx.currentTime+.1)=>((
 			//ml=1024,
 			div=this.smf.header.division,
-			t1=t0+div*8,t=t0,t2rt=x=>rt+(x-t)/div/reg.bpm*60,
+			t1=t0+div*16,t=t0,t2rt=x=>rt+(x-t)/div/reg.bpm*60,
 			w=sli(t0,t1)
 		)=>w.length&&(
 			//w.length>ml&&(t1=w[ml].t,w=w.slice(0,ml)),
@@ -121,8 +121,8 @@ player=class{
 				(regw(x)||(_=>x.name=='note'&&(reg.ch[x.ch].percussion?(bs=this.actx.createBufferSource(),g0=this.actx.createGain(),g1=this.actx.createGain())=>(
 					bs.buffer=noise,bs.playbackRate.value=(x.nn-35)/46*2,//35~81
 					g0.gain.setTargetAtTime(.01,t2rt(x.seq[0].t),.05),
-					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,t2rt(x.seq[0].t)+.001),
-					g1.gain.setValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,t2rt(x.seq[x.seq.length-1].t)),
+					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[0].t)+.001),
+					g1.gain.setValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)),
 					[bs,g0,g1,this.out].reduce((a,x)=>(a.connect(x),x)),
 					// setTimeout(_=>console.log(x),t2rt(x.seq[0].t)*1000),
 					bs.start(t2rt(x.seq[0].t)),bs.stop(t2rt(x.seq[x.seq.length-1].t))
@@ -130,8 +130,8 @@ player=class{
 					osc.frequency.value=440*2**((x.nn-69+reg.ch[x.ch].bend*reg.ch[x.ch].c.bend_sense)/12),
 					osc.setPeriodicWave(pwav[x.trk%pwav.length]),//osc.type='triangle',//['square','sawtooth','triangle'][x.ch%3],
 					g0.gain.setTargetAtTime(.01,t2rt(x.seq[0].t),.5),
-					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,t2rt(x.seq[0].t)+.001),
-					g1.gain.setValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.05,t2rt(x.seq[x.seq.length-1].t)),
+					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[0].t)+.001),
+					g1.gain.setValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)),
 					[osc,g0,g1,this.out].reduce((a,x)=>(a.connect(x),x)),
 					// setTimeout(_=>console.log(x),t2rt(x.seq[0].t)*1000),
 					osc.start(t2rt(x.seq[0].t)),osc.stop(t2rt(x.seq[x.seq.length-1].t))
