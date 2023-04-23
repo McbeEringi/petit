@@ -51,75 +51,68 @@ player=class{
 	constructor(actx){
 		this.actx=actx||new(window.AudioContext||webkitAudioContext)();
 		this.out=this.actx.destination;
+		this.sound_source={
+			noise:((w,x=this.actx.createBuffer(w,32767,this.actx.sampleRate))=>(Array(w).fill(
+				(w=>new Float32Array(32767).map(x=>(x=(w^w>>1)&1,w=w>>1|x<<14,x?-1:1)))(1)
+			).forEach((a,i)=>x.copyToChannel(a,i)),x))(this.actx.destination.channelCount),
+			pulse:[[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,1,1],[0,0,0,0,1,1,1,1],[1,1,1,1,1,1,0,0]].map(w=>this.pwav(w)),
+			triangle:this.pwav(Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15))
+		}
 	}
 	load(w){this.smf=w;return this;}
 	play(t=0){
 		if(!this.smf)return this;
-		//const t0=this.actx.currentTime,rt=x=>t0+(x-t)/this.smf.header.division/140*60;
+		//t0+(x-t)/this.smf.header.division/140*60
 		const
-		noise=((w,x=this.actx.createBuffer(w,32767,this.actx.sampleRate))=>(Array(w).fill(
-			(w=>new Float32Array(32767).map(x=>(x=(w^w>>1)&1,w=w>>1|x<<14,!x)))(1)
-		).forEach((a,i)=>x.copyToChannel(a,i)),x))(this.actx.destination.channelCount),
-		fft=(w,l=12)=>{
-			w=w.flatMap(x=>[...Array(2**l/w.length)].map(_=>[x,0]));
-			const add=([[a,b],[c,d]])=>[a+c,b+d],sub=([[a,b],[c,d]])=>[a-c,b-d],mul=([a,b],[c,d])=>[a*c-b*d,a*d+b*c],cm=t=>[Math.cos(t),Math.sin(t)],trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
-				core=(n=w.length,t=-Math.PI/n,p=0,o=1,x,y)=>n==1?[w[p]]:(y=core(n/=2,t*=2,p+o,o*=2),x=core(n,t,p,o).map((z,i)=>[z,mul(y[i],cm(t*i))]),x.map(add).concat(x.map(sub)));
-			return trs(core()).map(x=>new Float32Array([0,...x.slice(1)]));
-		},
-		pwav=[[0,1,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,0,1,1,1,1,1],Array.from('fedcba98765432100123456789abcdef',x=>parseInt(x,16)/15)].map(x=>actx.createPeriodicWave(...fft(x.map(y=>y*2-1))));
-
-		const
-		sli=(a,b)=>this.smf.tracks.flatMap(_=>_.filter(x=>a<=x.t&&x.t<b)).sort((a,b)=>a-b),
+		sli=(a,b)=>this.smf.tracks.flatMap(x=>x.filter(_=>a<=_.t&&_.t<b)).sort((a,b)=>a-b),
 		reg={
 			bpm:120,
 			ch:[...Array(16)].map((_,i)=>({
-				rac(){this.c={
+				get bend(){return this.bend_sense*this.bend_raw;},bend_raw:0,prg:0,percussion:i==9,
+				rac(){Object.assign(this,{
 					bend_sense:{msb:2,lsb:0,valueOf(){return this.msb+this.lsb/128;}},// ピッチベンドセンシティビティ +-2半音
 					mod:0,vol:100/127,pan:0,exp:0,sus:0,rpn:0,
 					tune:{fine:{msb:0x40,lsb:0},coarse:{msb:0x40},valueOf(){return((this.fine.msb<<7|this.fine.lsb)-0x2000)/0x2000+this.coarse.msb-0x40;}}// p53
-				};return this;},
-				reset(){return Object.assign(this.rac(),{bend:0,prg:0,percussion:i==9});}
-			}).reset())
+				});return this;},
+			}).rac())
 		},
 		regw=(w,r=reg)=>({
 			ctrl:_=>({// https://amei.or.jp/midistandardcommittee/MIDI1.0.pdf p152
-				1:_=>r.ch[w.ch].c.mod=w.value/127,// モジュレーション +-50セント(https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf p13)
-				7:_=>r.ch[w.ch].c.vol=w.value/127,// ボリューム
-				10:_=>r.ch[w.ch].c.pan=(w.value-64)/64,// パン -1(L)~1(R)
-				11:_=>r.ch[w.ch].c.exp=w.value/127,// エクスプレッション
-				64:_=>r.ch[w.ch].c.sus=w.value/127,// サスティン
-				100:_=>r.ch[w.ch].c.rpn=r.ch[w.ch].c.rpn&0xff00|w.value<<0,// RPN LSB
-				101:_=>r.ch[w.ch].c.rpn=r.ch[w.ch].c.rpn&0x00ff|w.value<<8,// RPN MSB
+				1:_=>r.ch[w.ch].mod=w.value/127,// モジュレーション +-50セント(https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf p13)
+				7:_=>r.ch[w.ch].vol=w.value/127,// ボリューム
+				10:_=>r.ch[w.ch].pan=(w.value-64)/64,// パン -1(L)~1(R)
+				11:_=>r.ch[w.ch].exp=w.value/127,// エクスプレッション
+				64:_=>r.ch[w.ch].sus=w.value/127,// サスティン
+				100:_=>r.ch[w.ch].rpn=r.ch[w.ch].rpn&0xff00|w.value<<0,// RPN LSB
+				101:_=>r.ch[w.ch].rpn=r.ch[w.ch].rpn&0x00ff|w.value<<8,// RPN MSB
 				121:_=>r.ch[w.ch].rac(),// リセットオールコントローラー
 				// 123:_=>_// オールノートオフ
 
 				38:{// DataEntry LSB
-					0:_=>r.ch[w.ch].c.bend_sense.lsb=w.value,
-					1:_=>r.ch[w.ch].c.tune.fine.lsb=w.value
-				}[r.ch[w.ch].c.rpn],
+					0:_=>r.ch[w.ch].bend_sense.lsb=w.value,
+					1:_=>r.ch[w.ch].tune.fine.lsb=w.value
+				}[r.ch[w.ch].rpn],
 				6:{// DataEntry MSB
-					0:_=>r.ch[w.ch].c.bend_sense.msb=w.value,
-					1:_=>r.ch[w.ch].c.tune.fine.msb=w.value,
-					2:_=>r.ch[w.ch].c.tune.coarse.msb=w.value
-				}[r.ch[w.ch].c.rpn]
+					0:_=>r.ch[w.ch].bend_sense.msb=w.value,
+					1:_=>r.ch[w.ch].tune.fine.msb=w.value,
+					2:_=>r.ch[w.ch].tune.coarse.msb=w.value
+				}[r.ch[w.ch].rpn]
 			}[w.ctrl]),
 			prg:_=>(_=>r.ch[w.ch].prg=w.value),// プログラム変更
-			bend:_=>(_=>r.ch[w.ch].bend=w.value/0x2000),// ピッチベンド
+			bend:_=>(_=>r.ch[w.ch].bend_raw=w.value/0x2000),// ピッチベンド
 			meta:_=>({
 				bpm:_=>r.bpm=w.data
 			}[w.type])
 		}[w.name]||(_=>_))(),
 		core=(t0,rt=this.actx.currentTime+.1)=>((
-			//ml=1024,
 			div=this.smf.header.division,
 			t1=t0+div*16,t=t0,t2rt=x=>rt+(x-t)/div/reg.bpm*60,
 			w=sli(t0,t1)
 		)=>w.length&&(
-			//w.length>ml&&(t1=w[ml].t,w=w.slice(0,ml)),
 			console.log(t0,rt,w),
 			w.forEach(x=>(
 				(regw(x)||(_=>x.name=='note'&&(reg.ch[x.ch].percussion?(bs=this.actx.createBufferSource(),g0=this.actx.createGain(),g1=this.actx.createGain())=>(
-					bs.buffer=noise,bs.playbackRate.value=(x.nn-35)/46*2,//35~81
+					bs.buffer=this.sound_source.noise,bs.playbackRate.value=(x.nn-35)/46*2,//35~81
 					g0.gain.setTargetAtTime(.01,t2rt(x.seq[0].t),.05),
 					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[0].t)+.001),
 					g1.gain.setValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)),
@@ -127,15 +120,15 @@ player=class{
 					// setTimeout(_=>console.log(x),t2rt(x.seq[0].t)*1000),
 					bs.start(t2rt(x.seq[0].t)),bs.stop(t2rt(x.seq[x.seq.length-1].t))
 				):(osc=this.actx.createOscillator(),g0=this.actx.createGain(),g1=this.actx.createGain())=>(
-					osc.frequency.value=440*2**((x.nn-69+reg.ch[x.ch].bend*reg.ch[x.ch].c.bend_sense)/12),
-					osc.setPeriodicWave(pwav[x.trk%pwav.length]),//osc.type='triangle',//['square','sawtooth','triangle'][x.ch%3],
+					osc.frequency.value=440*2**((x.nn-69+reg.ch[x.ch].bend)/12),
+					osc.setPeriodicWave([...this.sound_source.pulse,this.sound_source.triangle][x.trk%5]),//osc.type='triangle',//['square','sawtooth','triangle'][x.ch%3],
 					g0.gain.setTargetAtTime(.01,t2rt(x.seq[0].t),.5),
 					g1.gain.setValueAtTime(0,t2rt(x.seq[0].t)),g1.gain.linearRampToValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[0].t)+.001),
 					g1.gain.setValueAtTime(x.seq[0].vel/127*.1,t2rt(x.seq[x.seq.length-1].t)-.001),g1.gain.linearRampToValueAtTime(0,t2rt(x.seq[x.seq.length-1].t)),
 					[osc,g0,g1,this.out].reduce((a,x)=>(a.connect(x),x)),
 					// setTimeout(_=>console.log(x),t2rt(x.seq[0].t)*1000),
 					osc.start(t2rt(x.seq[0].t)),osc.stop(t2rt(x.seq[x.seq.length-1].t))
-				))()))(),console.log(reg.bpm),
+				))()))(),//console.log(reg.bpm),
 				[t,rt]=[x.t,t2rt(x.t)]
 			)),
 			rt=t2rt(t1),
@@ -149,8 +142,10 @@ player=class{
 	}
 	stop(){}
 
-	pref(t){
-
-	}
+	pwav(w){return this.actx.createPeriodicWave(...this.fft(w.flatMap(x=>Array(4096/w.length).fill(x*2-1))).map(x=>new Float32Array([0,...x.slice(1)])));}
+	fft(w){return((
+		n=[...Array(Math.log2(w.length))],br=x=>n.reduce((a,_,i)=>(a<<1)|(x>>>i&1),0),trs=x=>x[0].map((_,i)=>x.map(y=>y[i])),
+		pm=(a,b,[c,d])=>[[a+c,b+d],[a-c,b-d]],mul=(a,b,c,d)=>[a*c-b*d,a*d+b*c],core=([a,b],[c,d],t)=>pm(a,b,mul(c,d,Math.cos(t*=-Math.PI),Math.sin(t)))
+	)=>trs(n.reduce((a,x,i)=>(x=2**i,[...Array(a.length/2)].forEach((_,j)=>[a[i+j],a[i+j+x]]=core(a[(i=(j/x|0)*x*2)+(j%=x)],a[i+j+x],j/x)),a),w.map((_,i)=>[w[br(i)],0]))))();}
 };
 export{smf,player};
