@@ -16,5 +16,5 @@ zip=(w=[],{progress:f=_=>_,offset:[_o=0,o_=0]=[]}={})=>(async(// https://qiita.c
 	pk[2],zz,zz,x=le(w.length,2),x,le(cnt(this.cd)),le(cnt(this.lf)+_o),le(o_,2)// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
 ],{type:'application/zip'});}})).e())(),
 dl=({name:n,blob:b})=>(a=>URL.revokeObjectURL(a.href=URL.createObjectURL(b),a.download=n,a.click()))(document.createElement('a')),
-progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length' )],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
+progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length')],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
 export{zip,dl,progress};
