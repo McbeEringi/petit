@@ -13,7 +13,7 @@
   files is Array of File like Object
   any of `File()`, `{name,buffer:Blob()}`, `{name,buffer:ArrayBuffer()}`
   passing ArrayBuffer will speed up process speed
-- dl( file={ name *String*, blob *Blob* } *Object* ) => undefined  
+- dl( file={ name *String*, buffer *Blob ArrayBuffer* } *Object* ) => undefined  
   download blob to the device
 
   ```js
@@ -23,7 +23,7 @@
     {name:'hello/hoge.txt',buffer:new Blob(['Hello hoge!'])},
     {name:'hello/hoge/fuga.txt',buffer:new Blob(['Hello hoge fuga!'])}
   ];
-  dl({name:'hello.zip',blob:await zip(files)});
+  dl({name:'hello.zip',buffer:await zip(files)});
   ```
 
 - progress( response *Response*, callback([ done *Number*, all *Number* ]) *Function* ) => new_res *Response*  
