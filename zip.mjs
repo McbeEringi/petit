@@ -2,7 +2,7 @@ const
 zip=(w=[],{progress:f=_=>_,offset:[_o=0,o_=0]=[]}={})=>(async(// https://qiita.com/McbeEringi/items/5acc1f940ff7504f7e16
 	u=x=>new Uint8Array(x),zz=u([0,0]),v10=u([10,0]),pk=[...Array(3)].map((_,i)=>u([80,75,i=i*2+1,++i])),s={pre:[0,w.reduce((a,x)=>a+x.blob.size,0)],post:[0,w.length]},
 	cnt=x=>x.reduce((a,y)=>a+(y.byteLength||y.size||0),0),le=(x,l=4)=>u(l).map((_,i)=>x>>>(i*8)),te=new TextEncoder(),
-	crct=[...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)),crc=(buf,crc=0)=>~buf.reduce((c,x)=>crct[(c^x)&0xff]^(c>>>8),~crc)// https://www.rfc-editor.org/rfc/rfc1952
+	crc=(t=>(buf,crc=0)=>~buf.reduce((c,x)=>t[(c^x)&0xff]^(c>>>8),~crc))([...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)))// https://www.rfc-editor.org/rfc/rfc1952
 )=>(f(s),await w.reduce(async(a,{path:n,blob:b,date:d=new Date()},x)=>(
 	x=[
 		v10,zz,zz,le(((d.getFullYear()-1980)<<25)|((d.getMonth()+1)<<21)|(d.getDate()<<16)|(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1)),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
