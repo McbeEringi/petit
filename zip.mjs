@@ -1,20 +1,17 @@
 const
-zip=(w=[],{progress:f=_=>_,offset:[_o=0,o_=0]=[]}={})=>(async(// https://qiita.com/McbeEringi/items/5acc1f940ff7504f7e16
-	u=x=>new Uint8Array(x),zz=u([0,0]),v10=u([10,0]),pk=[...Array(3)].map((_,i)=>u([80,75,i=i*2+1,++i])),s={pre:[0,w.reduce((a,x)=>a+x.blob.size,0)],post:[0,w.length]},
-	cnt=x=>x.reduce((a,y)=>a+(y.byteLength||y.size||0),0),le=(x,l=4)=>u(l).map((_,i)=>x>>>(i*8)),te=new TextEncoder(),
+zip=(w=[],f=_=>_)=>((
+	u=x=>new Uint8Array(x),zz=u([0,0]),vz=u([10,0]),le2=x=>u([x,x>>>8]),le4=x=>u([x,x>>>8,x>>>16,x>>>24]),pk12=u([80,75,1,2]),pk34=u([80,75,3,4]),
+	cnt=x=>le4(x.reduce((a,y)=>a+(y.byteLength||y.size||0),0)),te=new TextEncoder(),i=0,
+	ddt=x=>((x.getFullYear()-1980)<<25)|((x.getMonth()+1)<<21)|(x.getDate()<<16)|(x.getHours()<<11)|(x.getMinutes()<<5)|(x.getSeconds()>>1),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
 	crc=(t=>(buf,crc=0)=>~buf.reduce((c,x)=>t[(c^x)&0xff]^(c>>>8),~crc))([...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)))// https://www.rfc-editor.org/rfc/rfc1952
-)=>(f(s),await w.reduce(async(a,{path:n,blob:b,date:d=new Date()},x)=>(
-	x=[
-		v10,zz,zz,le(((d.getFullYear()-1980)<<25)|((d.getMonth()+1)<<21)|(d.getDate()<<16)|(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1)),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
-		le(crc(u(await new Response(b).arrayBuffer()))),x=le(b.size),x,le((n=te.encode(n)).byteLength,2),zz
-	],// vReq flag cpsType date // CRC32 cpsSize rawSize nameLength extLength
-	s.pre[0]+=b.size,f(s),a=await a,
-	a.cd.push(pk[0],v10,...x,zz,zz,zz,zz,zz,le(cnt(a.lf)+_o),n),// PK0102 vMade X cmtLength 0304disk intAttr extAttrLSB extAttrMSB 0304pos name
-	a.lf.push(pk[1],...x,n,b),// PK0304 X name content
-	s.post[0]++,f(s),a
-),{lf:[],cd:[],e(x){return new Blob([...this.lf,...this.cd,
-	pk[2],zz,zz,x=le(w.length,2),x,le(cnt(this.cd)),le(cnt(this.lf)+_o),le(o_,2)// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
-],{type:'application/zip'});}})).e())(),
+)=>w.reduce(async(a,x,b,n)=>(
+	b=x.buffer||x,n=te.encode(x.name),x=[
+		vz,zz,zz,le4(ddt(new Date(x.lastModified))),le4(crc(u(b instanceof ArrayBuffer?b:await new Response(b).arrayBuffer()))),
+		x=le4(b.byteLength||b.size),x,le2(n.byteLength),zz// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
+	],f(++i/w.length),a=await a,
+	a.cd.push(pk12,vz,...x,zz,zz,zz,zz,zz,cnt(a.lf),n),a.lf.push(pk34,...x,n,b),a// PK0102 vMade x cmtLength 0304disk intAttr extAttrLSB extAttrMSB 0304pos name , PK0304 x name content
+),{lf:[],cd:[]}).then((x,_=le2(w.length))=>new Blob([...x.lf,...x.cd,u([80,75,5,6]),zz,zz,_,_,cnt(x.cd),cnt(x.lf),zz],{type:'application/zip'})))(),// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
+
 dl=({name:n,blob:b})=>(a=>URL.revokeObjectURL(a.href=URL.createObjectURL(b),a.download=n,a.click()))(document.createElement('a')),
 progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length')],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
 export{zip,dl,progress};

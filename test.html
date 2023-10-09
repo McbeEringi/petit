@@ -22,14 +22,6 @@
 	<hr>
 	<div class="stuff">
 		<div>
-			<h2>sfx</h2>
-			<input type="file" id="sfxinp" class="zab" webkitdirectory multiple> <button id="sfxbtn" class="zab bgca">run</button>
-			<script type="module">
-				import * as pz from'./zipex.mjs';
-				sfxbtn.onclick=async()=>pz.zip.dl({name:'sfx.html',blob:await pz.sfx([...sfxinp.files].map(x=>({path:x.webkitRelativePath||x.name,blob:x})))});
-			</script>
-		</div>
-		<div>
 			<h2>smf</h2>
 			<input type="file" id="smfinp" class="zab"> <button id="smflbtn" class="zab bgca">run</button>
 			<script type="module">
