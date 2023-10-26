@@ -8,7 +8,7 @@ zip=(w=[],f=_=>_)=>((
 	b=x.buffer||x,n=te.encode(x.name),x=[
 		vz,zz,zz,le4(ddt(new Date(x.lastModified))),le4(crc(u(b instanceof ArrayBuffer?b:await new Response(b).arrayBuffer()))),
 		x=le4(b.byteLength||b.size),x,le2(n.byteLength),zz// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
-	],f(++i/w.length),a=await a,
+	],f(++i/w.length/2),a=await a,f(++i/w.length/2),
 	a.cd.push(pk12,vz,...x,zz,zz,zz,zz,zz,cnt(a.lf),n),a.lf.push(pk34,...x,n,b),a// PK0102 vMade x cmtLength 0304disk intAttr extAttrLSB extAttrMSB 0304pos name , PK0304 x name content
 ),{lf:[],cd:[]}).then((x,_=le2(w.length))=>new Blob([...x.lf,...x.cd,u([80,75,5,6]),zz,zz,_,_,cnt(x.cd),cnt(x.lf),zz],{type:'application/zip'})))(),// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
 

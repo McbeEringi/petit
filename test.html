@@ -46,6 +46,30 @@
 				riffbtn.onclick=async _=>console.log(riff([await new Response(riffinp.files[0]).arrayBuffer(),t0=performance.now()][0]),performance.now()-t0);
 			</script>		
 		</div>
+		<div>
+			<h2>zip</h2>
+			<input type="file" id="zipinp" class="zab" webkitdirectory> <button id="zipbtn" class="zab bgca">run</button>
+			<progress id="zipbar" max="1" value="0"></progress>
+			<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+			<script type="module">
+				import{zip,dl}from'./zip.mjs';
+				zipbtn.onclick=async _=>(
+					console.log(
+						_=performance.now(),'petitzip',
+						await zip(
+							[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
+							x=>zipbar.value=x
+						),
+						performance.now()-_
+					),
+					console.log(
+						_=performance.now(),'jszip',
+						await[...zipinp.files].reduce((a,x)=>a.file(x.webkitRelativePath,x),new JSZip()).generateAsync({type:"blob"},x=>zipbar.value=x.percent/100),
+						performance.now()-_
+					)
+				);
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>svg</h2>
