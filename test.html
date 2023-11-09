@@ -55,7 +55,7 @@
 				import{zip,dl}from'./zip.mjs';
 				zipbtn.onclick=async _=>(
 					console.log(
-						_=performance.now(),'petitzip',
+						(_=performance.now(),'petitzip store'),
 						await zip(
 							[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
 							x=>zipbar.value=x
@@ -63,7 +63,15 @@
 						performance.now()-_
 					),
 					console.log(
-						_=performance.now(),'jszip',
+						(_=performance.now(),'petitzip compressionStream'),
+						await zip(
+							[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
+							x=>zipbar.value=x,1
+						),
+						performance.now()-_
+					),
+					console.log(
+						(_=performance.now(),'jszip'),
 						await[...zipinp.files].reduce((a,x)=>a.file(x.webkitRelativePath,x),new JSZip()).generateAsync({type:"blob"},x=>zipbar.value=x.percent/100),
 						performance.now()-_
 					)

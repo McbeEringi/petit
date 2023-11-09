@@ -8,7 +8,7 @@
 
 ## exports
 
-- ***async*** zip( files=[{ name *String*, buffer *Blob ArrayBuffer*, lastModified? *Number* }...] *Array(N)*, progress( processed *Number[0~1]* ) *Function* ) => Zip *Blob*  
+- ***async*** zip( files=[{ name *String*, buffer *Blob ArrayBuffer*, lastModified? *Number* }...] *Array(N)*, progress( processed *Number[0~1]* ) *Function*, useCompressionStream *Boolean* ) => Zip *Blob*  
   create uncompressed .zip archive without compression
   files is Array of File like Object
   any of `File()`, `{name,buffer:Blob()}`, `{name,buffer:ArrayBuffer()}`
