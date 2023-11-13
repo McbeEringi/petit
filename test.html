@@ -78,6 +78,20 @@
 				);
 			</script>
 		</div>
+		<div>
+			<h2>unzip</h2>
+			<input type="file" id="unzipinp" class="zab"> <button id="unzipbtn" class="zab bgca">run</button>
+			<script type="module">
+				import{unzip}from'./zip.mjs';
+				unzipbtn.onclick=async _=>(
+					console.log(
+						(_=performance.now(),'unzip'),
+						await unzip(unzipinp.files[0]),
+						performance.now()-_
+					)
+				);
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>svg</h2>

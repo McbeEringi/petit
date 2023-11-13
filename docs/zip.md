@@ -10,9 +10,13 @@
 
 - ***async*** zip( files=[{ name *String*, buffer *Blob ArrayBuffer*, lastModified? *Number* }...] *Array(N)*, progress( processed *Number[0~1]* ) *Function*, useCompressionStream *Boolean* ) => Zip *Blob*  
   create uncompressed .zip archive without compression
+  set useCompressionStream to true will compress files using deflate
   files is Array of File like Object
   any of `File()`, `{name,buffer:Blob()}`, `{name,buffer:ArrayBuffer()}`
   passing ArrayBuffer will speed up process speed
+- ***async*** unzip( Zip *Blob ArrayBuffer* ) => [ file *File* ...]*Array(N)*  
+  unzip .zip archive
+  compressed entry will skipped if DecompressionStream is unsupported
 - dl( file={ name *String*, buffer *Blob ArrayBuffer* } *Object* ) => undefined  
   download blob to the device
 

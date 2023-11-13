@@ -10,6 +10,15 @@ zip=(w=[],f=_=>_,cs)=>((
 	f(++i/w.length/3),a=await a,f(++i/w.length/3),a.cd.push(pk,_12,vz,...x,zz,zz,zz,zz,zz,cnt(a.lf),n),a.lf.push(pk,_34,...x,n,cb),a// PK0102 vMade x cmtLength 0304disk intAttr extAttrLSB extAttrMSB 0304pos name , PK0304 x name content
 ),{lf:[],cd:[]}).then((x,_=le2(w.length))=>new Blob([...x.lf,...x.cd,pk,u([5,6]),zz,zz,_,_,cnt(x.cd),cnt(x.lf),zz],{type:'application/zip'})))(),// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
 
+unzip=async(w=new Blob())=>((
+	w,e=w.reduceRight((a,_,i)=>a||[80,75,5,6].every((x,j)=>w[i+j]==x)&&i,0),le=(p,l=2)=>[...Array(l)].reduce((a,_,i)=>a|w[p+i]<<8*i,0),
+	ddt=x=>new Date((x>>>25)+1980,(x>>>21&15)-1,x>>>16&31,x>>>11&31,x>>>5&63,(x&31)*2).getTime(),td=new TextDecoder()
+)=>Promise.all([...Array(le(e+8))].reduce((a,p=le(a.p+42,4),n)=>(
+	(n=td.decode(new Uint8Array(w.buffer,p+30,le(p+26))))[n.length-1]!='/'&&a.a.push((async()=>new File([await{
+		0:_=>_,8:async(x,_)=>(_=self.DecompressionStream)?await new Response(new Blob([x]).stream().pipeThrough(new _('deflate-raw'))).blob():x
+	}[le(p+8)](new Uint8Array(w.buffer,p+30+le(p+26)+le(p+28),le(p+18,4)))],n,{lastModified:ddt(le(p+10,4))}))()),a.p+=46+le(a.p+28)+le(a.p+30)+le(a.p+32),a
+),{p:le(e+16,4),a:[]}).a))((w=w.buffer||w,new Uint8Array(w instanceof ArrayBuffer?w:await new Response(w).arrayBuffer()))),
+
 dl=({name:n,buffer:b})=>(a=>URL.revokeObjectURL(a.href=URL.createObjectURL(b instanceof Blob?b:new Blob([b])),a.download=n,a.click()))(document.createElement('a')),
 progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length')],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
-export{zip,dl,progress};
+export{zip,unzip,dl,progress};
