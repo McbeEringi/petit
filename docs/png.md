@@ -8,7 +8,7 @@
 
 ## exports
 
-- png({ data *Array*, width *Number*, height *Number*, palette? *Number*, alpha=false *Boolean* }) => RGB *Array(3)*  
+- png({ data *Array*, width *Number*, height *Number*, palette? *Number*, alpha=false *Boolean* }) => binary *Array*  
   converts raw data to PNG
 
   - data *Array*
@@ -21,6 +21,9 @@
     color palette of the image if needed
   - alpha *Boolean*
     set true when data(RGB mode) or palette(indexed mode) contains alpha value
+  - binary *Array*
+    - toDataURL() => URL *String*
+    - toBlob() => Blob *Blob*
 
   ```js
   import{png}from'./png.mjs';
