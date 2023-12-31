@@ -1,0 +1,26 @@
+const
+mhbd=w=>({[Symbol.iterator]:(
+	p=0,
+	w4=_=>w.slice(p,p+=4),
+	u32=_=>(_=w4(),(_[0]&255)|(_[1]&255)<<8|(_[2]&255)<<16|(_[3]&255)<<24),
+	ch=(h,...x)=>Object.assign([...mhbd(w.slice(h.p+h.header_l,h.p+h.total_l))],h,...x),
+	d={
+		mhbd:h=>ch(h,{ver:[4.2,4.5,4.7,4.8,4.9,5,6,'6.0.1','6.0.2','6.0.5',7,7.1,7.2,,'7.3.0','7.3.1',7.4,7.5][u32(p+=4)-9]+''}),
+		mhsd:h=>ch(h),
+		mhlt:h=>ch(h),mhit:h=>ch(h),
+		mhlp:h=>ch(h),mhyp:h=>ch(h),mhip:h=>ch(h),
+		mhod:h=>h,
+		mhla:h=>ch(h),mhia:h=>ch(h)
+	}
+)=>(
+	1,
+	{next:h=>w.length<=p?{done:1}:(
+		h={p,id:String.fromCodePoint(...w4()),header_l:u32(),total_l:u32()},
+		{
+			value:d[h.id](h),
+			done:(p=h.p+h.total_l,0)
+		}
+	)}
+)});
+
+export{mhbd};
