@@ -6,7 +6,7 @@ zip=(w=[],f=_=>_,cs)=>((
 	ddt=x=>((x.getFullYear()-1980)<<25)|((x.getMonth()+1)<<21)|(x.getDate()<<16)|(x.getHours()<<11)|(x.getMinutes()<<5)|(x.getSeconds()>>1),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
 	crc=(t=>(buf,crc=0)=>~buf.reduce((c,x)=>t[(c^x)&0xff]^(c>>>8),~crc))([...Array(256)].map((_,n)=>[...Array(8)].reduce(c=>(c&1)?0xedb88320^(c>>>1):c>>>1,n)))// https://www.rfc-editor.org/rfc/rfc1952
 )=>w.reduce(async(a,x,b,cb,n)=>(cb=await dfl(b=x.buffer||x),f(++i/w.length/3),n=te.encode(x.name),
-	x=[vz,gf,cm,le4(ddt(new Date(x.lastModified))),le4(crc(u(iab(b)?b:await new Response(b).arrayBuffer()))),le4(l(cb)),le4(l(b)),le2(l(n)),zz],// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
+	x=[vz,gf,cm,le4(ddt(new Date(x.lastModified||Date.now()))),le4(crc(u(iab(b)?b:await new Response(b).arrayBuffer()))),le4(l(cb)),le4(l(b)),le2(l(n)),zz],// vReq flag cpsType date CRC32 cpsSize rawSize nameLength extLength
 	f(++i/w.length/3),a=await a,f(++i/w.length/3),a.cd.push(pk,_12,vz,...x,zz,zz,zz,zz,zz,cnt(a.lf),n),a.lf.push(pk,_34,...x,n,cb),a// PK0102 vMade x cmtLength 0304disk intAttr extAttrLSB extAttrMSB 0304pos name , PK0304 x name content
 ),{lf:[],cd:[]}).then((x,_=le2(w.length))=>new Blob([...x.lf,...x.cd,pk,u([5,6]),zz,zz,_,_,cnt(x.cd),cnt(x.lf),zz],{type:'application/zip'})))(),// PK0506 disk 0304startDisk cnt0102disk cnt0102all 0102size 0102pos cmtLength
 
