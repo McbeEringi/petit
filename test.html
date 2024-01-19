@@ -56,24 +56,24 @@
 				zipbtn.onclick=async _=>(
 					console.log(
 						(_=performance.now(),'petitzip store'),
-						await zip(
+						dl({name:'test.zip',buffer:await zip(
 							[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
 							x=>zipbar.value=x
-						),
+						)}),
 						performance.now()-_
-					),
-					console.log(
-						(_=performance.now(),'petitzip compressionStream'),
-						await zip(
-							[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
-							x=>zipbar.value=x,1
-						),
-						performance.now()-_
-					),
-					console.log(
-						(_=performance.now(),'jszip'),
-						await[...zipinp.files].reduce((a,x)=>a.file(x.webkitRelativePath,x),new JSZip()).generateAsync({type:"blob"},x=>zipbar.value=x.percent/100),
-						performance.now()-_
+					// ),
+					// console.log(
+					// 	(_=performance.now(),'petitzip compressionStream'),
+					// 	await zip(
+					// 		[...zipinp.files].map(x=>new File([x],x.webkitRelativePath,x)),
+					// 		x=>zipbar.value=x,1
+					// 	),
+					// 	performance.now()-_
+					// ),
+					// console.log(
+					// 	(_=performance.now(),'jszip'),
+					// 	await[...zipinp.files].reduce((a,x)=>a.file(x.webkitRelativePath,x),new JSZip()).generateAsync({type:"blob"},x=>zipbar.value=x.percent/100),
+					// 	performance.now()-_
 					)
 				);
 			</script>

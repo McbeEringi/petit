@@ -1,6 +1,6 @@
 const
 zip=(w=[],f=_=>_,cs)=>((
-	u=x=>new Uint8Array(x),zz=u([0,0],cs=cs&&self.CompressionStream),vz=u([cs?20:10,0]),pk=u([80,75]),_12=u([1,2]),_34=u([3,4]),gf=u([8,0]),cm=cs?gf:zz,
+	u=x=>new Uint8Array(x),zz=u([0,0],cs=cs&&self.CompressionStream),vz=u([cs?20:10,0]),pk=u([80,75]),_12=u([1,2]),_34=u([3,4]),gf=u([0,8]),cm=cs?u([8,0]):zz,
 	le2=x=>u([x,x>>>8]),le4=x=>u([x,x>>>8,x>>>16,x>>>24]),l=x=>x.byteLength||x.size||0,cnt=x=>le4(x.reduce((a,y)=>a+l(y),0)),te=new TextEncoder(),i=0,
 	iab=x=>x instanceof ArrayBuffer,dfl=b=>cs?new Response((iab(b)?new Blob([b]):b).stream().pipeThrough(new cs('deflate-raw'))).blob():b,
 	ddt=x=>((x.getFullYear()-1980)<<25)|((x.getMonth()+1)<<21)|(x.getDate()<<16)|(x.getHours()<<11)|(x.getMinutes()<<5)|(x.getSeconds()>>1),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
