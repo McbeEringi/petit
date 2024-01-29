@@ -92,6 +92,16 @@
 				);
 			</script>
 		</div>
+		<div>
+			<h2>nbt</h2>
+			<input type="file" id="nbtinp" class="zab"> <button id="nbtbtn" class="zab bgca">run</button>
+			<script type="module">
+				import{nbt_read}from'./nbt.mjs';
+				nbtbtn.onclick=async _=>console.log(
+					await nbt_read(nbtinp.files[0])
+				);
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>svg</h2>
