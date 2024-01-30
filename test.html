@@ -96,9 +96,10 @@
 			<h2>nbt</h2>
 			<input type="file" id="nbtinp" class="zab"> <button id="nbtbtn" class="zab bgca">run</button>
 			<script type="module">
-				import{nbt_read}from'./nbt.mjs';
-				nbtbtn.onclick=async _=>console.log(
-					await nbt_read(nbtinp.files[0])
+				import{nbt_read,nbt_write}from'./nbt.mjs';
+				nbtbtn.onclick=async _=>(
+					console.log(_=await nbt_read(nbtinp.files[0])),
+					console.log(nbt_write(_)[0].reduce((a,x,i)=>a+(i%4?'':i%32?' ':'\n')+x.toString(16).padStart(2,0)+' ',''))
 				);
 			</script>
 		</div>
