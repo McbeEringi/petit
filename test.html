@@ -98,8 +98,12 @@
 			<script type="module">
 				import{nbt_read,nbt_write}from'./nbt.mjs';
 				nbtbtn.onclick=async _=>(
+					console.log(nbt_read,nbt_write),
 					console.log(_=await nbt_read(nbtinp.files[0])),
-					console.log(nbt_write(_)[0].reduce((a,x,i)=>a+(i%4?'':i%32?' ':'\n')+x.toString(16).padStart(2,0)+' ',''))
+					(async x=>(
+						console.log(x,x.reduce((a,x,i)=>a+(i%4?'':i%32?' ':'\n')+x.toString(16).padStart(2,0)+' ','')),
+						console.log(await nbt_read(x))
+					))(nbt_write(_)[0])
 				);
 			</script>
 		</div>

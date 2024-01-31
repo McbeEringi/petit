@@ -19,7 +19,7 @@ nbt_write=w=>((
 		_u:l=>[...u].slice(0,l),i8:x=>(b.setInt8(0,x),[u[0]]),i16:x=>(b.setInt16(0,x,1),v._u(2)),i32:x=>(b.setInt32(0,x,1),v._u(4)),i64:x=>(b.setBigInt64(0,x,1),[...u]),
 		f32:x=>(b.setFloat32(0,x,1),v._u(4)),f64:x=>(b.setFloat64(0,x,1),[...u]),str:(e=>x=>(x=e.encode(x),[...v.i16(x.length),...x]))(new TextEncoder())
 	},
-	core=w=>((ia=Array.isArray(w)&&[])=>Object.entries(w).flatMap(([i,x],k)=>(k=n=>ia||[n,...v.str(i)],{
+	core=w=>((ia=Array.isArray(w)&&[])=>Object.entries(ia?[...w]:w).flatMap(([i,x],k)=>(k=n=>ia||[n,...v.str(i)],{
 		Object:_=>[...k(e.obj),...core(x),0],Int8Array:ta2a(x,'i8v'),Int32Array:ta2a(x,'i32v'),BigInt64Array:ta2a(x,'i64v'),
 		Array:t=>(
 			t=x.type||'li',//todo
