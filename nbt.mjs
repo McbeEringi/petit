@@ -12,22 +12,23 @@ nbt_read=async w=>((
 	null:_=>a.pop(),li:_=>(x=>x.will&&a.push(x))(s(k(),oa([],{type:e[9],children_type:e[v.i8()],will:v.i32()}))),obj:_=>a.push(s(k(),{})),
 }[i]||(_=>s(k(),oa(v[i](),{type:i}))))(),{done:w.byteLength<=p})})}],a[0]))((w=w.buffer||w,w instanceof ArrayBuffer?w:await new Response(w).arrayBuffer())),
 nbt_write=w=>((
-	u=new Uint8Array(8),b=new DataView(u.buffer),ta2a=(x,t)=>_=>core(Object.assign([...x],{type:t})),
+	u=new Uint8Array(8),b=new DataView(u.buffer),n=Number,
 	e=(_=>_.reduce((a,x,i)=>(a[x]=i,a),{..._}))(['null','i8','i16','i32','i64','f32','f64','i8v','str','li','obj','i32v','i64v']),
-	nt=x=>Number.isSafeInteger(+x)?(y=>['i64','i32','i16','i8'][(y<128)+(y<32768)+(y<2147483648)])(Math.abs(x+.5)):x==new Float32Array([x])[0]?'f32':'f64',
+	nt=x=>n(x)!=x?'i64':n.isSafeInteger(x=n(x))?(y=>['i64','i32','i16','i8'][(y<128)+(y<32768)+(y<0x80000000)])(Math.abs(x+.5)):x==new Float32Array([x])[0]?'f32':'f64',
 	v={
-		_u:l=>[...u].slice(0,l),i8:x=>(b.setInt8(0,x),[u[0]]),i16:x=>(b.setInt16(0,x,1),v._u(2)),i32:x=>(b.setInt32(0,x,1),v._u(4)),
+		_u:l=>[...u].slice(0,l),i8:x=>(b.setInt8(0,n(x)),[u[0]]),i16:x=>(b.setInt16(0,n(x),1),v._u(2)),i32:x=>(b.setInt32(0,n(x),1),v._u(4)),
 		i64:x=>(x.constructor.name=='BigInt'?b.setBigInt64(0,x,1):(b.setInt32(0,x&0xffffffff,1),b.setInt32(4,x>>32,1)),[...u]),
-		f32:x=>(b.setFloat32(0,x,1),v._u(4)),f64:x=>(b.setFloat64(0,x,1),[...u]),str:(e=>x=>(x=e.encode(x),[...v.i16(x.length),...x]))(new TextEncoder())
+		f32:x=>(b.setFloat32(0,n(x),1),v._u(4)),f64:x=>(b.setFloat64(0,n(x),1),[...u]),str:(e=>x=>(x=e.encode(x),[...v.i16(x.length),...x]))(new TextEncoder())
 	},
-	core=w=>((ia=Array.isArray(w)&&[])=>Object.entries(ia?[...w]:w).flatMap(([i,x,k=n=>ia||[n,...v.str(i)],kv=(x,t)=>_=>[...k(e[t]),...v[t](x)],])=>({
-		Object:_=>[...k(e.obj),...core(x),0],Int8Array:ta2a(x,'i8v'),Int32Array:ta2a(x,'i32v'),BigInt64Array:ta2a(x,'i64v'),
+	core=w=>((ia=Array.isArray(w)&&[])=>Object.entries(ia?[...w]:w).flatMap(([i,x,
+		k=e=>ia||[e,...v.str(i)],kv=(t={toString:_=>x.type||nt(x)})=>_=>[...k(e[t]),...v[t](x)],ta=t=>_=>core(Object.assign([...x],{type:t})),
+	])=>({
+		Object:_=>[...k(e.obj),...core(x),0],Int8Array:ta('i8v'),Int32Array:ta('i32v'),BigInt64Array:ta('i64v'),Number:kv(),BigInt:kv(),String:kv('str'),
+		Uint8Array:_=>({i64:_=>[...k(e['i64']),...x]})[x.type](),
 		Array:t=>(
 			t=x.type||'li',//todo
 			[...k(e[t]),t=='li'?[e[x.children_type]]:[],...v.i32(x.length),...core(x)]
-		),
-		Number:kv(x,{toString:_=>x.type||nt(x)}),String:kv(x,'str'),
-		BigInt:t=>(t=x.type||(Number(x)==x?nt(Number(x)):'i64'),kv(t=='i64'?x:Number(x),t)()),Uint8Array:_=>({i64:_=>[...x]})[x.type]()
+		)
 	}[x.constructor.name])()))()
 )=>([new Uint8Array(core(w))]))();
 export{nbt_read,nbt_write};
