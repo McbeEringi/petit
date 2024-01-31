@@ -21,12 +21,12 @@ nbt_write=w=>((
 		f32:x=>(b.setFloat32(0,x,1),v._u(4)),f64:x=>(b.setFloat64(0,x,1),[...u]),str:(e=>x=>(x=e.encode(x),[...v.i16(x.length),...x]))(new TextEncoder())
 	},
 	core=w=>((ia=Array.isArray(w)&&[])=>Object.entries(ia?[...w]:w).flatMap(([i,x,k=n=>ia||[n,...v.str(i)],kv=(x,t)=>_=>[...k(e[t]),...v[t](x)],])=>({
-		Object:_=>[...k(e.obj),...core(x),0],Int8Array:ta2a(x,'i8v'),Int32Array:ta2a(x,'i32v'),BigInt64Array:ta2a(x,'i64v'),
+		Object:_=>[...k(e.obj),...core(x),0],Int8Array:ta2a(x,'i8v'),Int32Array:ta2a(x,'i32v'),BigInt64Array:ta2a(x,'i64v'),String:kv(x,'str'),
 		Array:t=>(
 			t=x.type||'li',//todo
 			[...k(e[t]),t=='li'?[e[x.children_type]]:[],...v.i32(x.length),...core(x)]
 		),
-		Number:kv(x,{toString:_=>x.type||nt(x)}),BigInt:kv(x,'i64'),Uint8Array:_=>({i64:_=>[...x]})[x.type](),String:kv(x,'str'),
+		Number:kv(x,{toString:_=>x.type||nt(x)}),BigInt:t=>(t=x.type||(Number(x)==x?nt(Number(x)):'i64'),kv(t=='i64'?x:Number(x),t)()),Uint8Array:_=>({i64:_=>[...x]})[x.type]()
 	}[x.constructor.name])()))()
 )=>([new Uint8Array(core(w))]))();
 export{nbt_read,nbt_write};
