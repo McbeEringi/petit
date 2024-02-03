@@ -27,6 +27,7 @@ nbt_write=w=>((
 		Uint8Array:_=>({i64:_=>[...k(e.i64),...x]})[x.type](),
 		Array:t=>(
 			t=x.type||'li',//todo
+			x.reduce((a,x)=>(a),[{a:['str']},{a:['obj']},{a:['li','i64v','i32v','i8v']},{a:['f64','f32','i16','i8']},{a:['f64','i32','i16','i8']},{a:['i64','i32','i16','i8']}]),
 			[...k(e[t]),t=='li'?[e[x.children_type]]:[],...v.i32(x.length),...core(x)]
 		)
 	}[x.constructor.name])()))()
