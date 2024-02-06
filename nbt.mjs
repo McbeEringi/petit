@@ -48,20 +48,21 @@ nbt_read=async w=>((
 // 	}[x.constructor.name])()))()
 // )=>([new Uint8Array(core(w))]))();
 nbt_write=w=>((
+	oa=Object.assign,ta=(w,t)=>_=>core([...w].map(x=>oa(x,{type:t}))),
+	e=(_=>_.reduce((a,x,i)=>(a[x]=i,a),{..._}))(['null','i8','i16','i32','i64','f32','f64','i8v','str','li','obj','i32v','i64v']),
 	v=((
 		n=Number,u=new Uint8Array(8),b=new DataView(u.buffer),le=1,
 		l=l=>[...u].slice(0,l)
-	)=>Object.assign(b,{
+	)=>oa(b,{
 		i8:x=>(b.setInt8(0,n(x)),[u[0]]),i16:x=>(b.setInt16(0,n(x),le),l(2)),i32:x=>(b.setInt32(0,n(x),le),l(4)),
 		i64:x=>(x.constructor.name=='BigInt'?b.setBigInt64(0,x,le):(b.setInt32(le?0:4,x&0xffffffff,le),b.setInt32(le?4:0,x>>32,le)),[...u]),
 		f32:x=>(b.setFloat32(0,n(x),le),l(4)),f64:x=>(b.setFloat64(0,n(x),le),[...u]),str:(e=>x=>(x=e.encode(x),[...b.i16(x.length),...x]))(new TextEncoder())
 	}))(),
-	e=(_=>_.reduce((a,x,i)=>(a[x]=i,a),{..._}))(['null','i8','i16','i32','i64','f32','f64','i8v','str','li','obj','i32v','i64v']),
 	core=w=>({
 		Object:_=>({t:'obj',x:Object.entries(w).flatMap(([i,x])=>(x=core(x),[e[x.t],...v.str(i),...x.x]))}),
-		Array,Int8Array,Int32Array,BigInt64Array,
+		Array,Int8Array:ta(w,'i8'),Int32Array:ta(w,'i32'),BigInt64Array:ta(w,'i64'),
 		String:_=>({t:'str',x:v.str(x)}),Number,BigInt
 	})[w.constructor.name]()
-)=>([new Uint8Array(core(w))]))();
+)=>([new Uint8Array(core(w).x)]))();
 
 export{nbt_read,nbt_write};
