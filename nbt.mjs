@@ -50,6 +50,10 @@ nbt_read=async w=>((
 nbt_write=w=>((
 	oa=Object.assign,ta=(w,t)=>_=>core([...w].map(x=>oa(x,{type:t}))),
 	e=(_=>_.reduce((a,x,i)=>(a[x]=i,a),{..._}))(['null','i8','i16','i32','i64','f32','f64','i8v','str','li','obj','i32v','i64v']),
+	num=w=>((
+		nt=x=>n(x)!=x?'i64':n.isSafeInteger(x=n(x))?(y=>['i64','i32','i16','i8'][(y<128)+(y<32768)+(y<0x80000000)])(Math.abs(x+.5)):x==new Float32Array([x])[0]?'f32':'f64',
+		t=w.type||nt(w)
+	)=>({t,e:!w.type,x:v[t](w)}))(),
 	v=((
 		n=Number,u=new Uint8Array(8),b=new DataView(u.buffer),le=1,
 		l=l=>[...u].slice(0,l)
@@ -61,7 +65,7 @@ nbt_write=w=>((
 	core=w=>({
 		Object:_=>({t:'obj',x:Object.entries(w).flatMap(([i,x])=>(x=core(x),[e[x.t],...v.str(i),...x.x]))}),
 		Array,Int8Array:ta(w,'i8'),Int32Array:ta(w,'i32'),BigInt64Array:ta(w,'i64'),
-		String:_=>({t:'str',x:v.str(x)}),Number,BigInt
+		String:_=>({t:'str',x:v.str(x)}),Number:num(w),BigInt:num(w)
 	})[w.constructor.name]()
 )=>([new Uint8Array(core(w).x)]))();
 
