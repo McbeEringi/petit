@@ -19,7 +19,8 @@ qr=(w)=>((
 				a[td_sjis.decode(new Uint8Array([y,x]))]=(y-(0x9f<y?0xc1:0x81))*0xc0+x-0x40
 			)),a),{})
 		},
-		v:[...Array(40)].reduce((a,x={},i)=>(// JISX0510:2018 p17 表1
+		v:[...Array(40)].reduce((a,x={},i)=>(
+			// JISX0510:2018 p17 表1
 			x.l=21+i*4,// モジュール数/辺
 			x.fpm=(_=>(// 機能パターンモジュール
 				_.ap=Math.max(0,_.apps**2-3)*25,// 位置合わせパターンモジュール
@@ -34,8 +35,7 @@ qr=(w)=>((
 			x.dw=x.dm>>3,// データ容量
 			x.dr=x.dm&7,// 残余ビット
 
-			a[x.ver=i+1]=x,
-			a
+			a[x.ver=i+1]=x,a
 		),{})
 	},
 	mode=(w)=>(w=[...w].reduce((a,x)=>(Object.keys(a).forEach(i=>(x in d.m[i])||(a[i]=0)),a),{n:1,a:1,k:1}),w=w.n?0:w.a?1:w.k?3:2,{x:1<<w,l:4,s:w}),
@@ -45,17 +45,23 @@ qr=(w)=>((
 		g=[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1])
 	)=>[...w,...w.reduce((a,_,i)=>(a[i]&&g.slice(1).forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w).slice(-n)])()	
 )=>(
-	w=w.map(w=>(
-		w={w,m:mode(w)},
-		console.log('mode',['NUM','ALPHANUM','BYTE','KANJI'][w.m.s]),
-		w.e=([
-			_=>[...Array(Math.ceil(w.w.length/3))].map((x,i)=>(x=w.w.slice(i*3,++i*3),{x:+x,l:[0,4,7,10][x.length]})),// NUM
-			_=>[...Array(Math.ceil(w.w.length/2))].map((x,i)=>(x=w.w.slice(i*2,++i*2),{x:[...x].reduce((a,x)=>a=a*45+d.m.a[x],0),l:[0,6,11][x.length]})),// ALPHANUM
-			_=>[...te.encode(w.w)].map(x=>({x,l:8})),// BYTE
-			_=>[...w.w].map(x=>({x:d.m.k[x],l:13}))// KANJI
-		][w.m.s])(),
-		w
-	)),
+	w={
+		d:w.map(w=>(
+			w={w,m:mode(w)},
+			// console.log('mode',['NUM','ALPHANUM','BYTE','KANJI'][w.m.s]),
+			w.d=([
+				_=>[...Array(Math.ceil(w.w.length/3))].map((x,i)=>(x=w.w.slice(i*3,++i*3),{x:+x,l:[0,4,7,10][x.length]})),// NUM
+				_=>[...Array(Math.ceil(w.w.length/2))].map((x,i)=>(x=w.w.slice(i*2,++i*2),{x:[...x].reduce((a,x)=>a=a*45+d.m.a[x],0),l:[0,6,11][x.length]})),// ALPHANUM
+				_=>[...te.encode(w.w)].map(x=>({x,l:8})),// BYTE
+				_=>[...w.w].map(x=>({x:d.m.k[x],l:13}))// KANJI
+			][w.m.s])(),
+			w.c=v=>({x:(w['wd'[w.m.s>>1]].length),l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w.m.s][(9<v)+(26<v)]}),
+			w.l=v=>w.m.l+w.c(v).l+w.d.reduce((a,x)=>a+x.l,0),
+			w
+		)),
+		l:v=>w.d.reduce((a,x)=>a+x.l(v),0),
+		x:v=>w.d.flatMap(x=>[x.m,x.c(v),...x.d],0).reduce((a,{x,l})=>(a),{a:[],x:0,i:0})
+	},
 	w
 ))();
 
