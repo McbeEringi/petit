@@ -107,6 +107,17 @@
 				);
 			</script>
 		</div>
+		<div>
+			<h2>qr</h2>
+			<input id="qrinp" class="zab"> <button id="qrbtn" class="zab bgca">run</button>
+			<script type="module">
+				import{qr}from'./qr.mjs';
+				self.qr=qr;
+				qrbtn.onclick=async _=>(
+					console.log(qr(qrinp.value))
+				);
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>svg</h2>
