@@ -109,12 +109,13 @@
 		</div>
 		<div>
 			<h2>qr</h2>
-			<input id="qrinp" class="zab"> <button id="qrbtn" class="zab bgca">run</button>
+			<input id="qrinp" class="zab"> <button id="qrbtn" class="zab bgca">run</button><img id="qrimg">
 			<script type="module">
 				import{qr}from'./qr.mjs';
 				self.qr=qr;
 				qrbtn.onclick=async _=>(
-					console.log(qr([qrinp.value]))
+					console.log(_=qr([qrinp.value])),
+					qrimg.src=_.toPNG().toDataURL()
 				);
 			</script>
 		</div>

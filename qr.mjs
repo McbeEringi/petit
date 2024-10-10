@@ -1,3 +1,4 @@
+import{png}from'./png.mjs';
 /*
 
 thanks to
@@ -10,7 +11,7 @@ thanks to
 */
 const
 qr=(w,{ecl=0,v=0}={})=>((
-	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),
+	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),oa=Object.assign,
 	d={
 		m:{
 			enum:['NUM','ALPHANUM','BYTE','KANJI'],
@@ -54,7 +55,21 @@ qr=(w,{ecl=0,v=0}={})=>((
 		mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255],
 		g=[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
-	flatTr=w=>w[w.length-1].flatMap((_,i)=>w.reduce((a,x)=>(i in x&&a.push(x[i]),a),[]))
+	flatTr=w=>w[w.length-1].flatMap((_,i)=>w.reduce((a,x)=>(i in x&&a.push(x[i]),a),[])),
+	a2px=w=>w.reduce((a,[x,y,f])=>(~f&&(a[[x,y]]={p:[x,y],x:f}),a),{}),
+	px=({x,y,f})=>(~f?{[[x,y]]:{p:[x,y],x:f}}:{}),
+	rect=({x,y=x,w,h=w,f,s=f})=>[...Array(h)].reduce((a,_x,j)=>([...Array(w)].forEach((_y,i,_)=>(_=(!i||i==w-1||!j||j==h-1)?s:f,~_&&(a[[_x=x+i,_y=y+j]]={p:[_x,_y],x:_}))),a),{}),
+	fpm=({l,ap})=>oa(
+		a2px([...Array(8)].flatMap((_,i)=>[i+(5<i),l-1-i].flatMap(x=>[[8,x,2],[x,8,2]]))),
+		a2px([...Array(l)].flatMap((x,i)=>(x=(i+1)&1,[[6,i,x],[i,6,x]]))),// time
+		oa(...[[0,0,0,0],[l-7,0,-1,0],[0,l-7,0,-1]].map(([x,y,i,j])=>oa(// pos
+			rect({x:0+x+i,y:0+y+j,w:8,f:0}),rect({x:0+x,y:0+y,w:7,f:-1,s:1}),rect({x:2+x,y:2+y,w:3,f:1})
+		))),
+		oa({},...ap.flatMap((y,j)=>ap.map((x,i)=>(i==0&&(j==0||j==ap.length-1)||(i==ap.length-1&&j==0)?{}:oa(// align
+			rect({x:x-2,y:y-2,w:5,f:1}),rect({x:x-1,y:y-1,w:3,f:-1,s:0})
+		))))),
+		px({x:8,y:l-8,f:1})// dark
+	)
 )=>(
 	w={
 		d:w.map(w=>(
@@ -79,7 +94,16 @@ qr=(w,{ecl=0,v=0}={})=>((
 	w.d=(({d,e})=>[d,e].flatMap(flatTr))(w.lv.b.reduce((a,x)=>(a.d.push(x=w.d.slice(a.p,a.p+=x)),a.e.push(rse(x,w.lv.e)),a),{d:[],e:[],p:0})),
 	
 	console.log(w.d.map(x=>x.toString(16).padStart(2,0))),
-	//w.a=[...Array()]
+
+	w.a={},
+	oa(w.a,fpm(w.v)),
+
+
+
+	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
+		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?(w.a[[x,y]]||{x:3}).x:0)
+	))).flat())),width:(w.v.l+8)*s,height:(w.v.l+8)*s,palette:[bg,fg,0x66ccaaff,0xff00ffff],alpha:1}),
+
 	w
 ))();
 
