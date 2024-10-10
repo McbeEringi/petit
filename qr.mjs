@@ -102,7 +102,7 @@ qr=(w,{ecl=0,v=0}={})=>((
 
 	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
 		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?(w.a[[x,y]]||{x:3}).x:0)
-	))).flat())),width:(w.v.l+8)*s,height:(w.v.l+8)*s,palette:[bg,fg,0x66ccaaff,0xff00ffff],alpha:1}),
+	))).flat())),width:(w.v.l+g*2)*s,height:(w.v.l+g*2)*s,palette:[bg,fg,0x66ccaaff,0xff00ffff],alpha:1}),
 
 	w
 ))();
