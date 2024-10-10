@@ -9,10 +9,11 @@ thanks to
 
 */
 const
-qr=(w)=>((
+qr=(w,{ecl=0,v=0}={})=>((
 	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),
 	d={
 		m:{
+			enum:['NUM','ALPHANUM','BYTE','KANJI'],
 			n:[...Array(10)].reduce((a,_,i)=>(a[i]=i,a),{}),
 			a:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{}),
 			k:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
@@ -42,8 +43,8 @@ qr=(w)=>((
 			[[117,20,4],[47,40,7],[24,43,22],[15,10,67],26,54,82,110,138],[[118,19,6],[47,18,31],[24,34,34],[15,20,61],30,58,86,114,142]
 		].reduce((a,x,i)=>(
 			x={_:x},x.l=21+i*4,x.ap=i?[6,...x._.slice(4),x.l-7]:[],// モジュール数/辺 位置合わせパターン座標
-			x.dw=(x.l**2-(192+Math.max(0,x.ap.length**2-3)*25+(x.l-16-Math.max(0,x.ap.length-2)*5)*2)-(31+(5<i)*36))>>3,// データ容量 (size-(pos+align-timing)-info)/8 cf.p17表1
-			x.ec=x._.slice(0,4).map(y=>(y=y.slice(1).reduce((a,c,i)=>(a.b.push({l:y[0]+i,c}),a.e-=(y[0]+i)*c,a.n+=c,a),{b:[],e:x.dw,n:0}),{b:y.b,l:y.e/y.n})),// エラー訂正 cf.p36表9
+			x.de=(x.l**2-(192+Math.max(0,x.ap.length**2-3)*25+(x.l-16-Math.max(0,x.ap.length-2)*5)*2)-(31+(5<i)*36))>>3,// データ容量 (size-(pos+align-timing)-info)/8 cf.p17表1
+			x.lv=x._.slice(0,4).map((y,lv)=>(y=y.slice(1).reduce((a,n,i)=>(a.b.push(Array(n).fill(y[0]+i)),a.d+=(y[0]+i)*n,a),{b:[],d:0}),y.b=y.b.flat(),{lv,b:y.b,d:y.d,e:(x.de-y.d)/y.b.length})),// エラー訂正 cf.p36表9
 			delete x._,a[x.v=i+1]=x,a
 		),{})
 	},
@@ -51,13 +52,13 @@ qr=(w)=>((
 	rse=(w,n)=>((
 		{exp,log}=[...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]}),
 		mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255],
-		g=[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1])
-	)=>[...w,...w.reduce((a,_,i)=>(a[i]&&g.slice(1).forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w).slice(-n)])()	
+		g=[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
+	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
+	flatTr=w=>w[w.length-1].flatMap((_,i)=>w.reduce((a,x)=>(i in x&&a.push(x[i]),a),[]))
 )=>(
 	w={
 		d:w.map(w=>(
 			w={w,m:mode(w)},
-			// console.log('mode',['NUM','ALPHANUM','BYTE','KANJI'][w.m.s]),
 			w.d=([
 				_=>[...Array(Math.ceil(w.w.length/3))].map((x,i)=>(x=w.w.slice(i*3,++i*3),{x:+x,l:[0,4,7,10][x.length]})),// NUM
 				_=>[...Array(Math.ceil(w.w.length/2))].map((x,i)=>(x=w.w.slice(i*2,++i*2),{x:[...x].reduce((a,x)=>a=a*45+d.m.a[x],0),l:[0,6,11][x.length]})),// ALPHANUM
@@ -67,13 +68,18 @@ qr=(w)=>((
 			w.c=v=>({x:(w['wd'[w.m.s>>1]].length),l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w.m.s][(9<v)+(26<v)]}),
 			w.l=v=>w.m.l+w.c(v).l+w.d.reduce((a,x)=>a+x.l,0),
 			w
-		)),
-		l:v=>w.d.reduce((a,x)=>a+x.l(v),0),
-		x:v=>(b=>[...Array(Math.ceil(b.length/8))].map((_,i)=>+('0b'+b.slice(i*=8,i+8).padEnd(8,0))))(
-			w.d.flatMap(w=>[w.m,w.c(v),...w.d].map(({x,l})=>x.toString(2).padStart(l,0))).join('')
-		)
+		))
 	},
-	console.log(w.x(1).map(x=>x.toString(16).padStart(2,0))),
+	w.v=d.v[Math.max(v,Object.values(d.v).find(x=>(w.d.reduce((a,y)=>a+y.l(x.v),0)<=x.lv[ecl].d<<3)).v)],
+	w.lv=w.v.lv[ecl],
+	w.m=w.d.map(x=>d.m.enum[x.m.s]),
+	w.d=(b=>[...Array(w.lv.d)].reduce((a,x,i)=>(x=b.slice(i*=8,i+8),a.a.push(x?+('0b'+x.padEnd(8,0)):(a.i^=1)?236:17),a),{a:[],i:0}).a)(
+		w.d.flatMap(x=>[x.m,x.c(w.v.v),...x.d].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
+	),
+	w.d=(({d,e})=>[d,e].flatMap(flatTr))(w.lv.b.reduce((a,x)=>(a.d.push(x=w.d.slice(a.p,a.p+=x)),a.e.push(rse(x,w.lv.e)),a),{d:[],e:[],p:0})),
+	
+	console.log(w.d.map(x=>x.toString(16).padStart(2,0))),
+	//w.a=[...Array()]
 	w
 ))();
 
