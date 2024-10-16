@@ -60,6 +60,7 @@ qr=(w,{ecl=0,v=0}={})=>((
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
 	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 )=>(
+	console.log(-t0+(self.t0=performance.now())),
 	w={
 		d:w.map(w=>(
 			w={w},
@@ -84,7 +85,9 @@ qr=(w,{ecl=0,v=0}={})=>((
 	w.d=(({d,e})=>[d,e].flatMap(w=>w[w.length-1].flatMap((_,i)=>w.reduce((a,x)=>(i in x&&a.push(x[i]),a),[]))))(
 		w.lv.b.reduce((a,x)=>(a.d.push(x=w.d.slice(a.p,a.p+=x)),a.e.push(rs(x,w.lv.e)),a),{d:[],e:[],p:0})
 	),
-	
+
+	console.log(-t0+(self.t0=performance.now())),
+
 	w.a=oa(
 		a2px([...Array(8)].flatMap((_,i)=>[i+(5<i),w.v.l-1-i].flatMap(x=>[[8,x,2],[x,8,2]]))),//reserve
 		(({l,ap})=>oa(// functional pattern module
@@ -99,24 +102,33 @@ qr=(w,{ecl=0,v=0}={})=>((
 		))(w.v),
 		(({v,l})=>6<v?a2px(bch({x:v,l:6},{x:7973,l:12}).flatMap((x,i)=>([[...(i=[l-9-i%3,5-(i/3|0)]),+x],[i[1],i[0],+x]]))):{})(w.v)
 	),
-	w.dm=(({l})=>[...Array(l)].flatMap((_,y)=>[...Array(l-1)].flatMap((i,x)=>(
+
+	console.log(-t0+(self.t0=performance.now())),
+
+	w.dm=(({l})=>[...Array(l)].flatMap((_,y)=>[...Array(l-1)].flatMap((i,x)=>(// data module map
 		i=l*2*((l-2-x)>>1)+!(x&1)+((x>>1)&1?l-1-y:y)*2,x+=5<x,
 		w.a[[x,y]]?[]:[{p:[x,y],i}]
 	))).sort(({i:a},{i:b})=>a-b))(w.v),
+	oa(w.a,a2px(w.dm.map(({p},i)=>[...p,(w.d[i>>3]>>(7-(i&7)))&1]))),// data module
 
-	oa(
-		w.a,
-		a2px(w.dm.map(({p},i)=>[...p,(w.d[i>>3]>>(7-(i&7)))&1]))
-	),
+	console.log(-t0+(self.t0=performance.now())),
 
-	w.mask=0,
-	w.dm.forEach(({p:[j,i]})=>w.a[[j,i]].x^=((i+j)&1)==0),
-	oa(
-		w.a,
-		(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|w.mask,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
-	),
+	{a:w.a,i:w.mask}=d.mp.map((x,mi)=>oa({},w.a,// mask gen
+		a2px(w.dm.map(({p})=>[...p,w.a[p].x^x[p.map(_=>_%6)].x])),
+		(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|mi,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
+	)).map((a,mi,s)=>(// choose mask
+		s=[...Array(w.v.l)],
+		s=s.reduce((b,_,i)=>(s.reduce((c,_,j)=>(
+			[[[i,j],c.x],[[i,j],c.y]].forEach(([p,c])=>(a[p].x==c.x.x?c.x.i++:(~c.x.x&&c.a.push(c.x),c.x={x:a[p].x,i:1}))),
+			[c.x.a,c.y.a].forEach(_=>_.forEach(x=>4<x.i&&(b+=x.i-2))),
+			i<w.v.l-1&&j<w.v.l-1&&[0,4].includes(a[[i,j]].x+a[[i+1,j]].x+a[[i,j+1]].x+a[[i+1,j+1]].x)&&(b+=3),
+			c
+		),{x:{x:{x:-1,i:0},a:[]},y:{x:{x:-1,i:0},a:[]}}),b),0),
+		s+=(Math.abs(Object.values(a).filter(x=>x.x).length/(w.v.l*w.v.l)-.5)*20|0)*10,
+		{a,i:mi,s}
+	)).sort(({s:a},{s:b})=>a-b)[0],
 
-	//oa(w.a,d.mp[0]),
+	console.log(-t0+(self.t0=performance.now())),
 
 	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
 		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?w.a[[x,y]].x:0)
