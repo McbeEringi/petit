@@ -12,6 +12,8 @@ thanks to
 const
 qr=(w,{ecl=0,v=0}={})=>((
 	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),oa=Object.assign,
+	a2px=w=>w.reduce((a,[x,y,f])=>(~f&&(a[[x,y]]={p:[x,y],x:f}),a),{}),
+	rect=({x,y=x,w,h=w,f=-1,s=f})=>[...Array(h)].reduce((a,_x,j)=>([...Array(w)].forEach((_y,i,_)=>(_=(!i||i==w-1||!j||j==h-1)?s:f,~_&&(a[[_x=x+i,_y=y+j]]={p:[_x,_y],x:_}))),a),{}),
 	d={
 		m:{
 			n:[...Array(10)].reduce((a,_,i)=>(a[i]=i,a),{}),
@@ -46,16 +48,17 @@ qr=(w,{ecl=0,v=0}={})=>((
 			x.de=(x.l**2-(192+Math.max(0,x.ap.length**2-3)*25+(x.l-16-Math.max(0,x.ap.length-2)*5)*2)-(31+(5<i)*36))>>3,// データ容量 (size-(pos+align-timing)-info)/8 cf.p17表1
 			x.lv=x._.slice(0,4).map((y,lv)=>(y=y.slice(1).reduce((a,n,i)=>(a.b.push(Array(n).fill(y[0]+i)),a.d+=(y[0]+i)*n,a),{b:[],d:0}),y.b=y.b.flat(),{lv,b:y.b,d:y.d,e:(x.de-y.d)/y.b.length})),// エラー訂正 cf.p36表9
 			delete x._,a[x.v=i+1]=x,a
-		),{})
+		),{}),
+		mp:[// mask
+			(i,j)=>(i+j)%2,(i,j)=>i%2,(i,j)=>j%3,(i,j)=>(i+j)%3,(i,j)=>((i/2|0)+(j/3|0))%2,(i,j)=>(i*j)%2+(i*j)%3,(i,j)=>((i*j)%2+(i*j)%3)%2,(i,j)=>((i+j)%2+(i*j)%3)%2,
+		].map(f=>a2px([...Array(36)].map((i,j)=>([i,j]=[j/6|0,j%6],[j,i,!f(i,j)]))))
 	},
 	rs=(w,n)=>((
 		{exp,log}=[...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]}),
 		mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255],
 		g=[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
-	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
-	a2px=w=>w.reduce((a,[x,y,f])=>(~f&&(a[[x,y]]={p:[x,y],x:f}),a),{}),
-	rect=({x,y=x,w,h=w,f=-1,s=f})=>[...Array(h)].reduce((a,_x,j)=>([...Array(w)].forEach((_y,i,_)=>(_=(!i||i==w-1||!j||j==h-1)?s:f,~_&&(a[[_x=x+i,_y=y+j]]={p:[_x,_y],x:_}))),a),{})
+	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 )=>(
 	w={
 		d:w.map(w=>(
@@ -112,6 +115,8 @@ qr=(w,{ecl=0,v=0}={})=>((
 		w.a,
 		(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|w.mask,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
 	),
+
+	//oa(w.a,d.mp[0]),
 
 	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
 		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?w.a[[x,y]].x:0)
