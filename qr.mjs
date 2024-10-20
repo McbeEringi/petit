@@ -10,7 +10,7 @@ thanks to
 
 */
 const
-qr=(w,{ecl=0,v=0}={})=>((
+qr=(w,{ecl=0,v=0,mask=3}={})=>((
 	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),oa=Object.assign,
 	a2px=w=>w.reduce((a,[x,y,f])=>(~f&&(a[[x,y]]={p:[x,y],x:f}),a),{}),
 	rect=({x,y=x,w,h=w,f=-1,s=f})=>[...Array(h)].reduce((a,_x,j)=>([...Array(w)].forEach((_y,i,_)=>(_=(!i||i==w-1||!j||j==h-1)?s:f,~_&&(a[[_x=x+i,_y=y+j]]={p:[_x,_y],x:_}))),a),{}),
@@ -133,6 +133,13 @@ qr=(w,{ecl=0,v=0}={})=>((
 	)).sort(({s:a},{s:b})=>a-b)[0],
 
 	console.log('mask eval',-t0+(self.t0=performance.now())),
+
+	// w.a=oa({},w.a,// mask gen
+	// 	a2px(w.dm.map(({p})=>[...p,w.a[p].x^d.mp[mask][p.map(_=>_%6)].x])),
+	// 	(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|mask,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
+	// ),
+
+	// console.log('done',-t0+(self.t0=performance.now())),
 
 	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
 		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?w.a[[x,y]].x:0)
