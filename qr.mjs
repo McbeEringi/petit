@@ -10,7 +10,7 @@ thanks to
 
 */
 const
-qr=(w,{ecl=0,v=0,mask=3}={})=>((
+qr=(w,{ecl=0,v=0}={})=>((
 	te=new TextEncoder(),td_sjis=new TextDecoder('sjis'),oa=Object.assign,
 	a2px=w=>w.reduce((a,[x,y,f])=>(~f&&(a[[x,y]]={p:[x,y],x:f}),a),{}),
 	rect=({x,y=x,w,h=w,f=-1,s=f})=>[...Array(h)].reduce((a,_x,j)=>([...Array(w)].forEach((_y,i,_)=>(_=(!i||i==w-1||!j||j==h-1)?s:f,~_&&(a[[_x=x+i,_y=y+j]]={p:[_x,_y],x:_}))),a),{}),
@@ -49,9 +49,7 @@ qr=(w,{ecl=0,v=0,mask=3}={})=>((
 			x.lv=x._.slice(0,4).map((y,lv)=>(y=y.slice(1).reduce((a,n,i)=>(a.b.push(Array(n).fill(y[0]+i)),a.d+=(y[0]+i)*n,a),{b:[],d:0}),y.b=y.b.flat(),{lv,b:y.b,d:y.d,e:(x.de-y.d)/y.b.length})),// エラー訂正 cf.p36表9
 			delete x._,a[x.v=i+1]=x,a
 		),{}),
-		mp:[// mask
-			(i,j)=>(i+j)%2,(i,j)=>i%2,(i,j)=>j%3,(i,j)=>(i+j)%3,(i,j)=>((i/2|0)+(j/3|0))%2,(i,j)=>(i*j)%2+(i*j)%3,(i,j)=>((i*j)%2+(i*j)%3)%2,(i,j)=>((i+j)%2+(i*j)%3)%2,
-		].map(f=>a2px([...Array(36)].map((i,j)=>([i,j]=[j/6|0,j%6],[j,i,!f(i,j)]))))
+		mp:[(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2]// mask
 	},
 	rs=(w,n)=>((
 		{exp,log}=[...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]}),
@@ -86,8 +84,6 @@ qr=(w,{ecl=0,v=0,mask=3}={})=>((
 		w.lv.b.reduce((a,x)=>(a.d.push(x=w.d.slice(a.p,a.p+=x)),a.e.push(rs(x,w.lv.e)),a),{d:[],e:[],p:0})
 	),
 
-	console.log('enc pad rs tr',-t0+(self.t0=performance.now())),
-
 	w.a=oa(
 		a2px([...Array(8)].flatMap((_,i)=>[i+(5<i),w.v.l-1-i].flatMap(x=>[[8,x,2],[x,8,2]]))),//reserve
 		(({l,ap})=>oa(// functional pattern module
@@ -103,43 +99,28 @@ qr=(w,{ecl=0,v=0,mask=3}={})=>((
 		(({v,l})=>6<v?a2px(bch({x:v,l:6},{x:7973,l:12}).flatMap((x,i)=>([[...(i=[l-9-i%3,5-(i/3|0)]),+x],[i[1],i[0],+x]]))):{})(w.v)
 	),
 
-	console.log('draw fp',-t0+(self.t0=performance.now())),
-
 	w.dm=(({l})=>[...Array(l)].flatMap((_,y)=>[...Array(l-1)].flatMap((i,x)=>(// data module map
 		i=l*2*((l-2-x)>>1)+!(x&1)+((x>>1)&1?l-1-y:y)*2,x+=5<x,
 		w.a[[x,y]]?[]:[{p:[x,y],i}]
 	))).sort(({i:a},{i:b})=>a-b))(w.v),
 	oa(w.a,a2px(w.dm.map(({p},i)=>[...p,(w.d[i>>3]>>(7-(i&7)))&1]))),// data module
 
-	console.log('draw data',-t0+(self.t0=performance.now())),
-
 	w.a=d.mp.map((x,mi)=>oa({},w.a,// mask gen
-		a2px(w.dm.map(({p})=>[...p,w.a[p].x^x[p.map(_=>_%6)].x])),
+		a2px(w.dm.map(({p})=>[...p,w.a[p].x^!x(...p)])),
 		(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|mi,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
 	)),
 
-	console.log('mask list',-t0+(self.t0=performance.now())),
-
-	{a:w.a,i:w.mask}=w.a.map((a,mi,s)=>(// choose mask
-		s=[...Array(w.v.l)],
-		s=s.reduce((b,_,i)=>(s.reduce((c,_,j)=>(
-			[[[i,j],c.x],[[i,j],c.y]].forEach(([p,c])=>(a[p].x==c.x.x?c.x.i++:(~c.x.x&&c.a.push(c.x),c.x={x:a[p].x,i:1}))),
-			[c.x.a,c.y.a].forEach(_=>_.forEach(x=>4<x.i&&(b+=x.i-2))),
-			i<w.v.l-1&&j<w.v.l-1&&[0,4].includes(a[[i,j]].x+a[[i+1,j]].x+a[[i,j+1]].x+a[[i+1,j+1]].x)&&(b+=3),
-			c
-		),{x:{x:{x:-1,i:0},a:[]},y:{x:{x:-1,i:0},a:[]}}),b),0),
-		s+=(Math.abs(Object.values(a).filter(x=>x.x).length/(w.v.l*w.v.l)-.5)*20|0)*10,
-		{a,i:mi,s}
+	{a:w.a,i:w.mask}=w.a.map((a,i,n,l)=>(// mask eval
+		l=[...Array(w.v.l)],
+		n=l.reduce((b,_,i,ll)=>b+ll.reduce((c,_,j)=>(c[0]+=a[[i,j]].x,c[1]+=a[[j,i]].x,c),['','']).map(x=>`2222${x}2222,`).join(''),''),
+		n=[
+			(n.match(/0{5,}|1{5,}/g)||[]).reduce((c,x)=>c+x.length-2,0),// N1
+			l.slice(1).reduce((b,_,i,ll)=>(ll.forEach((_,j)=>((a[[i,j]].x+a[[i+1,j]].x+a[[i,j+1]].x+a[[i+1,j+1]].x)&3)==0&&(b+=3)),b),0),// N2
+			(n.match(/(?<=[02]{4,}1011)101[02]|[02]101(?=1101[02]{4,})/g)||[]).length*40,// N3
+			(Math.abs(Object.values(a).filter(x=>x.x).length/(l.length*l.length)-.5)*20|0)*10// N4
+		],
+		{a,n,s:n.reduce((b,x)=>b+x,0),i}
 	)).sort(({s:a},{s:b})=>a-b)[0],
-
-	console.log('mask eval',-t0+(self.t0=performance.now())),
-
-	// w.a=oa({},w.a,// mask gen
-	// 	a2px(w.dm.map(({p})=>[...p,w.a[p].x^d.mp[mask][p.map(_=>_%6)].x])),
-	// 	(({l},{lv})=>a2px(bch({x:(+'1032'[lv]<<3)|mask,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[i+(5<i)+(6<i&&l-16),8,+x],[8,l-1-(i+(8<i)+(6<i&&l-16)),+x]])))(w.v,w.lv)
-	// ),
-
-	// console.log('done',-t0+(self.t0=performance.now())),
 
 	w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.v.l+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.v.l+g*2)].flatMap((_,x)=>(x-=g,
 		Array(s).fill(0<=x&&x<w.v.l&&0<=y&&y<w.v.l?w.a[[x,y]].x:0)
