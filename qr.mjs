@@ -58,7 +58,6 @@ qr=(w,{ecl=0,v=0}={})=>((
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
 	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 )=>(
-	(-t0+(self.t0=performance.now())),
 	w={
 		d:w.map(w=>(
 			w={w},
