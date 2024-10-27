@@ -115,12 +115,13 @@
 	<img id="qrimg">
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
-		import{qr}from'./qr.mjs';
+		import{qr,QR}from'./qr.mjs';
 		TA.editor(qrinp);
+		self.QR=QR;
 		(qrbtn.onclick=qrinp.oninput=_=>(async _=>(
 			console.log(_=qr(Function(`return ${qrinp.value};`)())),
 			qrimg.src=_.toPNG({fg:+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),bg:0}).toDataURL()
-		))().then(_=>qrimg.style.opacity=1).catch(_=>qrimg.style.opacity=.5))();
+		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
 	<h2>svg</h2>
