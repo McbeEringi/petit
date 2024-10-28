@@ -15,13 +15,20 @@ class QR{
 		const
 		td_sjis=new TextDecoder('sjis'),
 		d={
-			mode:{
-				num:[...Array(10)].reduce((a,_,i)=>(a[i]=i,a),{}),
-				eisu:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{}),
-				kanji:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
+			mode:[
+				{i:0,name:'NUM',enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
+					{x:isNaN(+x)?w.e=1:+x,l:[,4,7,10][x.length]}
+				)),w.e?null:w)},
+				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/2))].map((x,i)=>w.e||(x=[...w.x.slice(2*i,2*++i)],
+					{x:x.reduce((a,x)=>(x in d.dict?a*45+d.dict[x]:w.e=1),0),l:[,6,11][x.length]}
+				)),w.e?null:w),d))({i:1,name:'EISU',dict:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{})}),
+				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...w.x].map(x=>w.e||(
+					{x:x in d.dict?d.dict[x]:w.e=1,l:13}
+				)),w.e?null:w),d))({i:3,name:'KANJI',dict:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
 					a[td_sjis.decode(new Uint8Array([y,x]))]=(y-(0x9f<y?0xc1:0x81))*0xc0+x-0x40
-				)),a),{})
-			},
+				)),a),{})}),
+				{i:2,name:'OCT',enc:(w,e)=>(w=[...e.encode(w)].map(x=>({x,l:8})),{x:w,l:w.length})}
+			],
 			ver:[// [...ec,...ap] ec[lv=0~3]:[short_data_l,short_blk_n(,long_blk_n)], ap:[6,...ap,l-7]
 				,// empty slot
 				[[19,1],[16,1],[13,1],[9,1]],[[34,1],[28,1],[22,1],[16,1]],
@@ -67,18 +74,14 @@ class QR{
 		Object.assign(this,{d});
 	}
 	gen(w=[],{ecl=1,ver=-1,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
-		w=w.map(w=>(
-			w=Object.entries(d.mode).map(([i,x])=>[i,[...w].map(y=>x[y])]).find(([i,x])=>!x.includes())||['oct',[...te.encode(w)]],
-			w[0]=({num:0,eisu:1,kanji:3,oct:2})[w[0]],
-			{
-				mode:{x:1<<w[0],l:4,s:w[0]},
-				len:{x:w[1].length,l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w[0]]},
-				data:(x=>({x,l:x.reduce((a,y)=>a+y.l,0)}))([
-					(w,f)=>f(w,3,10,[,4,7,10]),(w,f)=>f(w,2,45,[,6,11]),w=>w.map(x=>({x,l:8})),w=>w.map(x=>({x,l:13}))
-				][w[0]](w[1],(w,d,b,l)=>[...Array(Math.ceil(w.length/d))].map((x,i)=>(x=w.slice(i*d,++i*d),{x:x.reduce((a,y)=>a*b+y,0),l:l[x.length]}))))
-			}
-		)),
-		console.log(...w)
+		w={
+			data:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
+				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][d.i]},data:{x:x.x,l:x.x.reduce((a,x)=>a+x.l,0)}
+			}),null))
+		},
+		
+		console.log(w)
+
 	))(Object.assign,this);}
 }
 
