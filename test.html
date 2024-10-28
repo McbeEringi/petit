@@ -118,8 +118,9 @@
 		import{qr,QR}from'./qr.mjs';
 		TA.editor(qrinp);
 		self.QR=QR;
+		const qri=new QR();
 		(qrbtn.onclick=qrinp.oninput=_=>(async _=>(
-			console.log(_=qr(Function(`return ${qrinp.value};`)())),
+			console.log(_=qr(Function(`return ${qrinp.value};`)()),qri.gen(Function(`return ${qrinp.value};`)())),
 			qrimg.src=_.toPNG({fg:+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),bg:0}).toDataURL()
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>

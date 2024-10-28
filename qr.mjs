@@ -9,6 +9,7 @@ thanks to
 - [wikiversity - Reed–Solomon codes for coders](https://en.wikiversity.org/wiki/Reed–Solomon_codes_for_coders)
 
 */
+const bench=1;
 
 class QR{
 	constructor(){
@@ -74,13 +75,14 @@ class QR{
 		Object.assign(this,{d});
 	}
 	gen(w=[],{ecl=1,ver=-1,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
+		self.t0=performance.now(),
 		w={
-			data:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
+			data:[...Array(bench)].reduce(_=>w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
 				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][d.i]},data:{x:x.x,l:x.x.reduce((a,x)=>a+x.l,0)}
-			}),null))
+			}),null)),0)
 		},
 		
-		console.log(w)
+		console.log('new',w,performance.now()-t0)
 
 	))(Object.assign,this);}
 }
@@ -136,8 +138,9 @@ qr=(w,{ecl=0,v=0}={})=>((
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
 	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 )=>(
+	self.t0=performance.now(),
 	w={
-		d:w.map(w=>(
+		d:[...Array(bench)].reduce(_=>w.map(w=>(
 			w={w},
 			w.m=(s=>(s=s.n?0:s.a?1:s.k?3:2,{x:1<<s,l:4,s}))([...w.w].reduce((a,x)=>(a.m.forEach(i=>(x in d.m[i])||(a[i]=0)),a),{m:[...'nak'],n:1,a:1,k:1})),
 			w.d=([
@@ -149,8 +152,9 @@ qr=(w,{ecl=0,v=0}={})=>((
 			w.c=v=>({x:(w['wd'[w.m.s>>1]].length),l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w.m.s][(9<v)+(26<v)]}),
 			w.l=v=>w.m.l+w.c(v).l+w.d.reduce((a,x)=>a+x.l,0),
 			w
-		))
+		)),0)
 	},
+	console.log('old',w,performance.now()-t0),
 	w.v=d.v[Math.max(v,Object.values(d.v).find(x=>(w.d.reduce((a,y)=>a+y.l(x.v),0)<=x.lv[ecl].d<<3)).v)],
 	w.lv=w.v.lv[ecl],
 	w.m=w.d.map(x=>['NUM','ALPHANUM','BYTE','KANJI'][x.m.s]),
