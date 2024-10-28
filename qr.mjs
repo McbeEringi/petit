@@ -9,27 +9,27 @@ thanks to
 - [wikiversity - Reed–Solomon codes for coders](https://en.wikiversity.org/wiki/Reed–Solomon_codes_for_coders)
 
 */
-const bench=1;
+const bench=10000;
 
 class QR{
 	constructor(){
-		const
-		td_sjis=new TextDecoder('sjis'),
-		d={
+		const td_sjis=new TextDecoder('sjis');
+		this.d={
 			mode:[
-				{i:0,name:'NUM',enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
+				{i:0,name:'NUM',l:[10,12,14],enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
 					{x:isNaN(+x)?w.e=1:+x,l:[,4,7,10][x.length]}
 				)),w.e?null:w)},
 				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/2))].map((x,i)=>w.e||(x=[...w.x.slice(2*i,2*++i)],
 					{x:x.reduce((a,x)=>(x in d.dict?a*45+d.dict[x]:w.e=1),0),l:[,6,11][x.length]}
-				)),w.e?null:w),d))({i:1,name:'EISU',dict:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{})}),
+				)),w.e?null:w),d))({i:1,name:'EISU',dict:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{}),l:[9,11,13]}),
 				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...w.x].map(x=>w.e||(
 					{x:x in d.dict?d.dict[x]:w.e=1,l:13}
 				)),w.e?null:w),d))({i:3,name:'KANJI',dict:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
 					a[td_sjis.decode(new Uint8Array([y,x]))]=(y-(0x9f<y?0xc1:0x81))*0xc0+x-0x40
-				)),a),{})}),
-				{i:2,name:'OCT',enc:(w,e)=>(w=[...e.encode(w)].map(x=>({x,l:8})),{x:w,l:w.length})}
+				)),a),{}),l:[8,10,12]}),
+				{i:2,name:'OCT',l:[8,16,16],enc:(w,e)=>(w=[...e.encode(w)].map(x=>({x,l:8})),{x:w,l:w.length})}
 			],
+			mode_len:[[1,10],[10,27],[27]],
 			ver:[// [...ec,...ap] ec[lv=0~3]:[short_data_l,short_blk_n(,long_blk_n)], ap:[6,...ap,l-7]
 				,// empty slot
 				[[19,1],[16,1],[13,1],[9,1]],[[34,1],[28,1],[22,1],[16,1]],
@@ -54,8 +54,8 @@ class QR{
 				[[117,20,4],[47,40,7],[24,43,22],[15,10,67],26,54,82,110,138],[[118,19,6],[47,18,31],[24,34,34],[15,20,61],30,58,86,114,142]
 			].map((w,v)=>(
 				w={_:w,v,size:17+v*4},
-				w.align=v==1?[]:[6,w._.slice(4),w.size-7],
-				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))/8,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
+				w.align=v==1?[]:[6,...w._.slice(4),w.size-7],
+				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
 				w.lv=w._.slice(0,4).map((x,lv)=>(
 					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
 					x.err=(w.cap-x.cap)/x.blocks.length,x
@@ -71,19 +71,34 @@ class QR{
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 		};
-
-		Object.assign(this,{d});
+		console.log(this);
 	}
-	gen(w=[],{ecl=1,ver=-1,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
-		self.t0=performance.now(),
+	gen(w=[],{ecl=0,ver=0,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
 		w={
-			data:[...Array(bench)].reduce(_=>w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
-				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][d.i]},data:{x:x.x,l:x.x.reduce((a,x)=>a+x.l,0)}
-			}),null)),0)
+			data_enc:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
+				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:d.l},data:{x:x.x,l:x.x.reduce((a,x)=>a+x.l,0)}
+			}),null))
 		},
-		
-		console.log('new',w,performance.now()-t0)
+		w.ver=d.mode_len.reduce((a,l,x)=>a||(
+			x=w.data_enc.reduce((a,w)=>a+w.mode.l+w.len.l[x]+w.data.l,0)/8,
+			d.ver.slice(...l).find(v=>x<=v.lv[ecl].cap)
+		),void 0),
 
+		!w.ver?({err:'Too big data!'}):
+		!(-1<ver&&ver<d.ver.length)?({err:'Invalid Version!'}):
+		ver&&ver<w.ver.v?({err:'Needs bigger Version!'}):(
+			w.ver=d.ver[ver||w.ver.v],w.lv=w.ver.lv[ecl],
+			(i=>w.data_enc.forEach(w=>w.len.l=w.len.l[i]))(d.mode_len.reduce((a,[x,y=1/0],i)=>a||x<=w.ver.v&&w.ver.v<y&&{i},0).i),
+
+			w.data_pad=(b=>[...Array(w.lv.cap)].reduce((a,x,i)=>(x=b.slice(8*i,8*++i),a.a.push(x?+('0b'+x.padEnd(8,0)):(a.i^=1)?236:17),a),{a:[],i:0}).a)(
+				w.data_enc.flatMap(w=>[w.mode,w.len,...w.data.x].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
+			),
+			w.data_i2l=(w=>w[w.length-1].flatMap((x,i)=>x.flatMap((_,j)=>w.flatMap(y=>j in y[i]?[y[i][j]]:[]))))(
+				w.lv.blocks.map(x=>[x=w.data_pad.slice(...x),d.rs(x,w.lv.err)])
+			),
+
+			w
+		)
 	))(Object.assign,this);}
 }
 
@@ -138,9 +153,8 @@ qr=(w,{ecl=0,v=0}={})=>((
 	)=>w.reduce((a,_,i)=>(a[i]&&g.forEach((x,j)=>a[i+j+1]^=mul(x,a[i])),a),w.slice()).slice(-n))(),
 	bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
 )=>(
-	self.t0=performance.now(),
 	w={
-		d:[...Array(bench)].reduce(_=>w.map(w=>(
+		d:w.map(w=>(
 			w={w},
 			w.m=(s=>(s=s.n?0:s.a?1:s.k?3:2,{x:1<<s,l:4,s}))([...w.w].reduce((a,x)=>(a.m.forEach(i=>(x in d.m[i])||(a[i]=0)),a),{m:[...'nak'],n:1,a:1,k:1})),
 			w.d=([
@@ -152,9 +166,8 @@ qr=(w,{ecl=0,v=0}={})=>((
 			w.c=v=>({x:(w['wd'[w.m.s>>1]].length),l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w.m.s][(9<v)+(26<v)]}),
 			w.l=v=>w.m.l+w.c(v).l+w.d.reduce((a,x)=>a+x.l,0),
 			w
-		)),0)
+		))
 	},
-	console.log('old',w,performance.now()-t0),
 	w.v=d.v[Math.max(v,Object.values(d.v).find(x=>(w.d.reduce((a,y)=>a+y.l(x.v),0)<=x.lv[ecl].d<<3)).v)],
 	w.lv=w.v.lv[ecl],
 	w.m=w.d.map(x=>['NUM','ALPHANUM','BYTE','KANJI'][x.m.s]),
