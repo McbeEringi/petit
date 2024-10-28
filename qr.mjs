@@ -66,15 +66,17 @@ class QR{
 
 		Object.assign(this,{d});
 	}
-	gen(w=[],{ecl,ver,mask,te=new TextEncoder()}={}){return((oa,{d})=>(
+	gen(w=[],{ecl=1,ver=-1,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
 		w=w.map(w=>(
-			w=Object.entries(d.mode).map(([i,x])=>[i,[...w].map(y=>x[y])]).find(([i,x])=>!x.includes())||['oct',[...te.encode(w)]]
-			[w[0],({
-				num:x=>x,
-				eisu:x=>x,
-				kanji:x=>x,
-				oct:x=>x
-			})[w[0]](w[1])]
+			w=Object.entries(d.mode).map(([i,x])=>[i,[...w].map(y=>x[y])]).find(([i,x])=>!x.includes())||['oct',[...te.encode(w)]],
+			w[0]=({num:0,eisu:1,kanji:3,oct:2})[w[0]],
+			{
+				mode:{x:1<<w[0],l:4,s:w[0]},
+				len:{x:w[1].length,l:[[10,12,14],[9,11,13],[8,16,16],[8,10,12]][w[0]]},
+				data:(x=>({x,l:x.reduce((a,y)=>a+y.l,0)}))([
+					(w,f)=>f(w,3,10,[,4,7,10]),(w,f)=>f(w,2,45,[,6,11]),w=>w.map(x=>({x,l:8})),w=>w.map(x=>({x,l:13}))
+				][w[0]](w[1],(w,d,b,l)=>[...Array(Math.ceil(w.length/d))].map((x,i)=>(x=w.slice(i*d,++i*d),{x:x.reduce((a,y)=>a*b+y,0),l:l[x.length]}))))
+			}
 		)),
 		console.log(...w)
 	))(Object.assign,this);}
