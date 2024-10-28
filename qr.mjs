@@ -49,7 +49,7 @@ class QR{
 				w.align=v==1?[]:[6,w._.slice(4),w.size-7],
 				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))/8,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
 				w.lv=w._.slice(0,4).map((x,lv)=>(
-					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l,i)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
+					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
 					x.err=(w.cap-x.cap)/x.blocks.length,x
 				)),
 				delete w._,w
@@ -66,8 +66,17 @@ class QR{
 
 		Object.assign(this,{d});
 	}
-	gen(w=[],{ecl,ver,mask}={}){return((oa,{d})=>(
-		console.log(d)
+	gen(w=[],{ecl,ver,mask,te=new TextEncoder()}={}){return((oa,{d})=>(
+		w=w.map(w=>(
+			w=Object.entries(d.mode).map(([i,x])=>[i,[...w].map(y=>x[y])]).find(([i,x])=>!x.includes())||['oct',[...te.encode(w)]]
+			[w[0],({
+				num:x=>x,
+				eisu:x=>x,
+				kanji:x=>x,
+				oct:x=>x
+			})[w[0]](w[1])]
+		)),
+		console.log(...w)
 	))(Object.assign,this);}
 }
 
