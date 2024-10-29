@@ -69,9 +69,12 @@ class QR{
 					g:[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
 				}).a.slice(-n)
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
-			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)]
-		};
-		console.log(this);
+			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
+
+			img:l=>(w=>Object.assign(w,{
+				set:x=>x
+			}))([...Array(l)].map(_=>[...Array(l)].fill(-1)))
+	};
 	}
 	gen(w=[],{ecl=0,ver=0,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
 		w={
@@ -96,6 +99,8 @@ class QR{
 			w.data_i2l=(w=>w[w.length-1].flatMap((x,i)=>x.flatMap((_,j)=>w.flatMap(y=>j in y[i]?[y[i][j]]:[]))))(
 				w.lv.blocks.map(x=>[x=w.data_pad.slice(...x),d.rs(x,w.lv.err)])
 			),
+
+			w.img=d.img(w.ver.size),
 
 			w
 		)
