@@ -16,7 +16,9 @@ class QR{
 		const
 		td_sjis=new TextDecoder('sjis'),oa=Object.assign,
 		bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
-		fmt=[8,0,24,16].map(e=>[...Array(8)].map((_,i)=>bch({x:e|i,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[(i<7?5<i:-15)+i,8,+x],[8,(i<7?-1:14+(i<9))-i,+x]])));
+		mask=(m=>[8,0,24,16].map(e=>m.map((fn,i)=>({fn,fmt:bch({x:e|i,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[(i<7?5<i:-15)+i,8,+x],[8,(i<7?-1:14+(i<9))-i,+x]])}))))([
+			(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2
+		]);
 
 		this.d={
 			mode:[
@@ -62,12 +64,11 @@ class QR{
 				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
 				w.lv=w._.slice(0,4).map((x,lv)=>(
 					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
-					x.err=(w.cap-x.cap)/x.blocks.length,x.fmt=fmt[lv],x
+					x.err=(w.cap-x.cap)/x.blocks.length,x.mask=mask[lv],x
 				)),
 				w.info=v<7?[]:bch({x:v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]),
 				delete w._,w
 			)),
-			mask:[(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2],// mask
 
 			rs:(({exp,log,mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255]})=>
 				(w,n)=>w.reduce((a,_,i)=>(a.a[i]&&a.g.forEach((x,j)=>a.a[i+j+1]^=mul(x,a.a[i])),a),{a:w.slice(),
@@ -76,8 +77,7 @@ class QR{
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 
 			img:l=>(d=>oa(d,{
-				set:(w,{xy=0}={})=>(w.flat().forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d),
-				get:(x,y)=>d[y+=(y<0&&l)][x+=(x<0&&l)]
+				set:(w,{xy=0}={})=>(w.flat().forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d)
 			}))([...Array(l)].map(_=>[...Array(l)].fill(-1))),
 			patt:(x,y,l,r=(l-1)/2)=>[...Array(l)].flatMap((_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1]))
 		};
@@ -115,12 +115,20 @@ class QR{
 				w.ver.align.flatMap((y,j,a)=>a.flatMap((x,i,{length:l})=>((i==0&&(j==0||j==l-1)||(i==l-1&&j==0))?[]:d.patt(x-2,y-2,5)))),// align
 				d.patt(0,0,7),[[8,-8,1]]// finder, dark
 			]),
-			// w.img.set([w.lv.fmt[7]]),
+
+			w.map=[...Array(w.size*(w.size-1))].map((_={},i)=>(
+				[(_.x=w.size-2-(_.n=i/w.size/2|0)*2-(i&1),_.x+(5<_.x)),(x=>_.n&1?x:w.size-1-x)((i/2|0)%w.size)]
+			)).filter(([x,y])=>!~w.img[y][x]),
+			w.img.set([w.map.map((p,i)=>[...p,(w.data_i2l[i>>3]>>(7-(i&7)))&1])]),// data module
+
+
+			w.map.forEach(([x,y])=>w.img[y][x]^=!w.lv.mask[0].fn(x,y)),
+			w.img.set([w.lv.mask[0].fmt]),
 
 
 			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
-				Array(s).fill((x=>~x?x:3)(0<=x&&x<w.size&&0<=y&&y<w.size?w.img.get(x,y):-1))
-			))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff,0xff00ff44],alpha:1}),
+				Array(s).fill(0<=x&&x<w.size&&0<=y&&y<w.size?w.img[y][x]:0)
+			))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 				
 			w
 		)
