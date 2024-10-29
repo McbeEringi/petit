@@ -13,7 +13,7 @@ const bench=10000;
 
 class QR{
 	constructor(){
-		const td_sjis=new TextDecoder('sjis');
+		const td_sjis=new TextDecoder('sjis'),oa=Object.assign;
 		this.d={
 			mode:[
 				{i:0,name:'NUM',l:[10,12,14],enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
@@ -71,7 +71,7 @@ class QR{
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
 
-			img:l=>(w=>Object.assign(w,{
+			img:l=>(w=>oa(w,{
 				set:x=>x
 			}))([...Array(l)].map(_=>[...Array(l)].fill(-1)))
 	};
@@ -79,7 +79,7 @@ class QR{
 	gen(w=[],{ecl=0,ver=0,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
 		w={
 			data_enc:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
-				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:d.l},data:{x:x.x,l:x.x.reduce((a,x)=>a+x.l,0)}
+				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:d.l},data:oa(x.x,{l:x.x.reduce((a,x)=>a+x.l,0)})
 			}),null))
 		},
 		w.ver=d.mode_len.reduce((a,l,x)=>a||(
@@ -94,7 +94,7 @@ class QR{
 			(i=>w.data_enc.forEach(w=>w.len.l=w.len.l[i]))(d.mode_len.reduce((a,[x,y=1/0],i)=>a||x<=w.ver.v&&w.ver.v<y&&{i},0).i),
 
 			w.data_pad=(b=>[...Array(w.lv.cap)].reduce((a,x,i)=>(x=b.slice(8*i,8*++i),a.a.push(x?+('0b'+x.padEnd(8,0)):(a.i^=1)?236:17),a),{a:[],i:0}).a)(
-				w.data_enc.flatMap(w=>[w.mode,w.len,...w.data.x].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
+				w.data_enc.flatMap(w=>[w.mode,w.len,...w.data].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
 			),
 			w.data_i2l=(w=>w[w.length-1].flatMap((x,i)=>x.flatMap((_,j)=>w.flatMap(y=>j in y[i]?[y[i][j]]:[]))))(
 				w.lv.blocks.map(x=>[x=w.data_pad.slice(...x),d.rs(x,w.lv.err)])
@@ -226,7 +226,7 @@ qr=(w,{ecl=0,v=0}={})=>((
 	w
 ))();
 
-export{qr,QR};
+export{qr,QR,png};
 
 // class QR{
 // 	constructor(){
