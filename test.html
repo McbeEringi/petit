@@ -112,7 +112,7 @@
 	<h2>qr</h2>
 	<textarea id="qrinp" class="zab">[`Hello world! 0123`,`こんにちは世界！`]</textarea><br>
 	<button id="qrbtn" class="zab bgca">run</button><br>
-	<img id="qrimg">
+	<img id="qrimg"><img id="qrimg_">
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
 		import{qr,QR}from'./qr.mjs';
@@ -120,8 +120,13 @@
 		self.QR=QR;
 		const qri=new QR();
 		(qrbtn.onclick=qrinp.oninput=_=>(async _=>(
-			console.log(qri.gen(Function(`return ${qrinp.value};`)()),_=qr(Function(`return ${qrinp.value};`)())),
-			qrimg.src=_.toPNG({fg:+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),bg:0}).toDataURL()
+			_={x:[
+				qri.gen(Function(`return ${qrinp.value};`)()),
+				qr(Function(`return ${qrinp.value};`)())
+			],fg:+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join(''))},
+			console.log(..._.x),
+			qrimg_.src=_.x[0].toPNG({fg:_.fg,bg:0}).toDataURL(),
+			qrimg.src=_.x[1].toPNG({fg:_.fg,bg:0}).toDataURL()
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>

@@ -71,9 +71,11 @@ class QR{
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
 
-			img:l=>(w=>oa(w,{
-				set:x=>x
-			}))([...Array(l)].map(_=>[...Array(l)].fill(-1)))
+			img:l=>(d=>oa(d,{
+				set:(w,{xy=0}={})=>(w=w.flat(),w.forEach(([x,y,v])=>d[y][x]=v),xy&&w.forEach(([x,y,v])=>d[x][y]=v),d),
+				get:(x,y)=>d[y][x]
+			}))([...Array(l)].map(_=>[...Array(l)].fill(-1))),
+			patt:(x,y,l,r=(l-1)/2)=>[...Array(l)].flatMap((_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1]))
 	};
 	}
 	gen(w=[],{ecl=0,ver=0,mask=-1,te=new TextEncoder()}={}){return((oa,{d})=>(
@@ -90,7 +92,7 @@ class QR{
 		!w.ver?({err:'Too big data!'}):
 		!(-1<ver&&ver<d.ver.length)?({err:'Invalid Version!'}):
 		ver&&ver<w.ver.v?({err:'Needs bigger Version!'}):(
-			w.ver=d.ver[ver||w.ver.v],w.lv=w.ver.lv[ecl],
+			w.ver=d.ver[ver||w.ver.v],w.lv=w.ver.lv[ecl],w.size=w.ver.size,
 			(i=>w.data_enc.forEach(w=>w.len.l=w.len.l[i]))(d.mode_len.reduce((a,[x,y=1/0],i)=>a||x<=w.ver.v&&w.ver.v<y&&{i},0).i),
 
 			w.data_pad=(b=>[...Array(w.lv.cap)].reduce((a,x,i)=>(x=b.slice(8*i,8*++i),a.a.push(x?+('0b'+x.padEnd(8,0)):(a.i^=1)?236:17),a),{a:[],i:0}).a)(
@@ -100,8 +102,23 @@ class QR{
 				w.lv.blocks.map(x=>[x=w.data_pad.slice(...x),d.rs(x,w.lv.err)])
 			),
 
-			w.img=d.img(w.ver.size),
+			w.img=d.img(w.size).set([
+				[...Array(16)].map((_,i)=>[8,i+(5<i)+(7<i&&w.size-17),2]),// reserve
+				[...Array(w.size-16)].map((_,i)=>[6,8+i,(i+1)&1]),// timimg
+				[...Array(24)].map((_,i)=>[i&16?w.size-8:7,i&8?w.size-1-(i&7):i&15,0]),// separator
+				d.patt(w.size-7,0,7),// finder
+				6<w.ver.v?d.bch({x:w.ver.v,l:6},{x:7973,l:12}).map((x,i)=>[w.size-9-i%3,5-(i/3|0),+x]):[]// info
+			],{xy:1}).set([
+				d.patt(0,0,7),// finder
+				w.ver.align.flatMap((y,j,a)=>a.flatMap((x,i,{length:l})=>((i==0&&(j==0||j==l-1)||(i==l-1&&j==0))?[]:d.patt(x-2,y-2,5)))),// align
+				[[8,w.size-8,1]]// dark
+			]),
 
+
+			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
+				Array(s).fill((x=>~x?x:3)(0<=x&&x<w.size&&0<=y&&y<w.size?w.img.get(x,y):-1))
+			))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff,0xff00ff44],alpha:1}),
+				
 			w
 		)
 	))(Object.assign,this);}
