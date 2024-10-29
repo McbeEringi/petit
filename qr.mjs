@@ -13,7 +13,11 @@ const bench=10000;
 
 class QR{
 	constructor(){
-		const td_sjis=new TextDecoder('sjis'),oa=Object.assign;
+		const
+		td_sjis=new TextDecoder('sjis'),oa=Object.assign,
+		bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
+		fmt=[8,0,24,16].map(e=>[...Array(8)].map((_,i)=>bch({x:e|i,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[(i<7?5<i:-15)+i,8,+x],[8,(i<7?-1:14+(i<9))-i,+x]])));
+
 		this.d={
 			mode:[
 				{i:0,name:'NUM',l:[10,12,14],enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
@@ -58,8 +62,9 @@ class QR{
 				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
 				w.lv=w._.slice(0,4).map((x,lv)=>(
 					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
-					x.err=(w.cap-x.cap)/x.blocks.length,x
+					x.err=(w.cap-x.cap)/x.blocks.length,x.fmt=fmt[lv],x
 				)),
+				w.info=v<7?[]:bch({x:v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]),
 				delete w._,w
 			)),
 			mask:[(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2],// mask
@@ -69,7 +74,6 @@ class QR{
 					g:[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
 				}).a.slice(-n)
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
-			bch:({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
 
 			img:l=>(d=>oa(d,{
 				set:(w,{xy=0}={})=>(w.flat().forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d),
@@ -106,13 +110,12 @@ class QR{
 				[...Array(16)].map((_,i)=>[8,i+(5<i)-(7<i)*17,2]),// reserve
 				[...Array(w.size-16)].map((_,i)=>[6,8+i,(i+1)&1]),// timimg
 				[...Array(24)].map((_,i)=>[i&16?-8:7,i&8?-(i&7)-1:i&15,0]),// separator
-				d.patt(-7,0,7),// finder
-				6<w.ver.v?d.bch({x:w.ver.v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]):[]// info
+				d.patt(-7,0,7),w.ver.info// finder, info
 			],{xy:1}).set([
-				d.patt(0,0,7),// finder
 				w.ver.align.flatMap((y,j,a)=>a.flatMap((x,i,{length:l})=>((i==0&&(j==0||j==l-1)||(i==l-1&&j==0))?[]:d.patt(x-2,y-2,5)))),// align
-				[[8,-8,1]]// dark
+				d.patt(0,0,7),[[8,-8,1]]// finder, dark
 			]),
+			// w.img.set([w.lv.fmt[7]]),
 
 
 			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
