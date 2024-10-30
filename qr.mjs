@@ -12,12 +12,13 @@ thanks to
 class QR{
 	constructor({te=new TextEncoder()}={}){
 		const
-		td_sjis=new TextDecoder('sjis'),
+		td_sjis=new TextDecoder('sjis'),fmap=(w,f)=>[].concat(...w.map(f)),
 		bch=({x:x,l:a},{x:y,l:b},m=0)=>[...(((x<<b)|[...Array(a)].reduce((e,_,i)=>(i++,((e>>(a+b-i))&1)?e^(y<<(a-i)):e),x<<b))^m).toString(2).padStart(a+b,0)],
-		mask=(m=>[8,0,24,16].map(e=>m.map((fn,m)=>({m,fn,fmt:bch({x:e|m,l:5},{x:1335,l:10},21522).flatMap((x,i)=>[[(i<7?5<i:-15)+i,8,+x],[8,(i<7?-1:14+(i<9))-i,+x]])}))))([
+		mask=(m=>[8,0,24,16].map(e=>m.map((fn,m)=>({m,fn,fmt:fmap(bch({x:e|m,l:5},{x:1335,l:10},21522),(x,i)=>[[(i<7?5<i:-15)+i,8,+x],[8,(i<7?-1:14+(i<9))-i,+x]])}))))([
 			(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2
 		]);
 
+		this.fmap=fmap;
 		this.d={
 			te,
 			mode:[
@@ -62,7 +63,7 @@ class QR{
 				w.align=v==1?[]:[6,...w._.slice(4),w.size-7],
 				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
 				w.lv=w._.slice(0,4).map((x,lv)=>(
-					x=x.slice(1).flatMap((l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
+					x=fmap(x.slice(1),(l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
 					x.err=(w.cap-x.cap)/x.blocks.length,x.mask=mask[lv],x
 				)),
 				w.info=v<7?[]:bch({x:v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]),
@@ -76,12 +77,12 @@ class QR{
 			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 
 			img:l=>(d=>Object.assign(d,{
-				set:(w,{xy=0}={})=>(w.flat().forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d)
+				set:(w,{xy=0}={})=>([].concat(...w).forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d)
 			}))([...Array(l)].map(_=>[...Array(l)].fill(-1))),
-			patt:(x,y,l,r=(l-1)/2)=>[...Array(l)].flatMap((_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,+(Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1)]))
+			patt:(x,y,l,r=(l-1)/2)=>fmap([...Array(l)],(_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,+(Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1)]))
 		};
 	}
-	gen(w=[],{ecl=0,ver=0,mask=-1,te}={}){return(d=>(
+	gen(w=[],{ecl=0,ver=0,mask=-1,te}={}){return(({d,fmap})=>(
 		te||(te=d.te),
 		w={
 			data_enc:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
@@ -98,9 +99,9 @@ class QR{
 			(i=>w.data_enc.forEach(w=>w.len.l=w.len.l[i]))(d.mode_len.reduce((a,[x,y=1/0],i)=>a||x<=w.ver.v&&w.ver.v<y&&{i},0).i),
 
 			w.data_pad=(b=>[...Array(w.lv.cap)].reduce((a,x,i)=>(x=b.slice(8*i,8*++i),a.a.push(x?+('0b'+x.padEnd(8,0)):(a.i^=1)?236:17),a),{a:[],i:0}).a)(
-				w.data_enc.flatMap(w=>[w.mode,w.len,...w.data].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
+				fmap(w.data_enc,w=>[w.mode,w.len,...w.data].map(({x,l})=>x.toString(2).padStart(l,0))).join('')+'0000'
 			),
-			w.data_i2l=(w=>w[w.length-1].flatMap((x,i)=>x.flatMap((_,j)=>w.flatMap(y=>j in y[i]?[y[i][j]]:[]))))(
+			w.data_i2l=(w=>fmap(w[w.length-1],(x,i)=>fmap(x,(_,j)=>fmap(w,y=>j in y[i]?[y[i][j]]:[]))))(
 				w.lv.blocks.map(x=>[x=w.data_pad.slice(...x),d.rs(x,w.lv.err)])
 			),
 
@@ -110,7 +111,7 @@ class QR{
 				[...Array(24)].map((_,i)=>[i&16?-8:7,i&8?-(i&7)-1:i&15,0]),// separator
 				d.patt(-7,0,7),w.ver.info// finder, info
 			],{xy:1}).set([
-				w.ver.align.flatMap((y,j,a)=>a.flatMap((x,i,{length:l})=>((i==0&&(j==0||j==l-1)||(i==l-1&&j==0))?[]:d.patt(x-2,y-2,5)))),// align
+				fmap(w.ver.align,(y,j,a)=>fmap(a,(x,i,{length:l})=>((i==0&&(j==0||j==l-1)||(i==l-1&&j==0))?[]:d.patt(x-2,y-2,5)))),// align
 				d.patt(0,0,7),[[8,-8,1]]// finder, dark
 			]),
 
@@ -125,19 +126,18 @@ class QR{
 				s=(s.match(/0{5,}|1{5,}/g)||[]).reduce((a,x)=>a+x.length-2,0)+// N1
 					l.slice(1).reduce((a,_,i,ll)=>(ll.forEach((_,j)=>((w.img[i][j]+w.img[i+1][j]+w.img[i][j+1]+w.img[i+1][j+1])&3)||(a+=3)),a),0)+// N2
 					(s.match(/(?<=[02]{4,}1011)101[02]|[02]101(?=1101[02]{4,})/g)||[]).length*40+// N3
-					(Math.abs(w.img.flat().filter(x=>x).length/(l.length*l.length)-.5)*20|0)*10,// N4
+					(Math.abs([].concat(...w.img).filter(x=>x).length/(l.length*l.length)-.5)*20|0)*10,// N4
 				fn(),{m:m.m,s}
 			))(_=>w.map.forEach(([x,y])=>w.img[y][x]^=!m.fn(x,y)))).sort(({s:a},{s:b})=>a-b)[0].m],
 			w.map.forEach(([x,y])=>w.img[y][x]^=!w.mask.fn(x,y)),w.img.set([w.mask.fmt]),// mask apply
 
-			// w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
-			// 	Array(s).fill(0<=x&&x<w.size&&0<=y&&y<w.size?w.img[y][x]:0)
-			// ))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
-			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array((w.size+g*2)*g*s*s).fill(0),...w.img.flatMap(x=>Array(s).fill([...Array(g).fill(0),...x,...Array(g).fill(0)].flatMap(y=>Array(s).fill(y))).flat()),...Array((w.size+g*2)*g*s*s).fill(0)],width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
+			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:((h,v)=>[].concat(
+				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
+			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
 			w
 		)
-	))(this.d);}
+	))(this);}
 }
 
 export{QR,png};
