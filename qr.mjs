@@ -4,6 +4,7 @@ import{png}from'./png.mjs';
 thanks to
 - [日本産業規格の簡易閲覧 - JISX0510:2018](https://kikakurui.com/x0/X0510-2018-01.html)
 - [独極 - 独学QRコード](http://ik1-316-18424.vs.sakura.ne.jp/category/QRCode/index.html)
+- [swetake.com - QRコードをつくってみる](https://www.swetake.com/qrcode/)
 - [Thonky.com's QR Code Tutorial](https://www.thonky.com/qr-code-tutorial/)
 - [Creating a QR Code step by step](https://www.nayuki.io/page/creating-a-qr-code-step-by-step)
 - [wikiversity - Reed–Solomon codes for coders](https://en.wikiversity.org/wiki/Reed–Solomon_codes_for_coders)
