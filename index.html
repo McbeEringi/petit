@@ -22,18 +22,28 @@
 </head>
 <body>
 	<style>img{max-width:100%;}</style>
-	<p>loading...<br><progress></progress></p>
+	<pre><span>Loading...</span><br><progress></progress></pre>
 	<script type="module">
-		import * as marked from'https://cdn.jsdelivr.net/npm/marked/src/marked.min.js';
+		import{Marked}from'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.min.js';
+		import{baseUrl}from'https://cdn.jsdelivr.net/npm/marked-base-url/src/index.js';
+		import{markedHighlight}from'https://cdn.jsdelivr.net/npm/marked-highlight/src/index.js';
 		import prism from 'https://esm.run/prismjs';
-		const e=document.querySelector('p'),url=(location.search.slice(1)||'README')+'.md';
-		marked.setOptions({baseUrl:url,highlight:(code,lang)=>prism.languages[lang]?prism.highlight(code,prism.languages[lang],lang):code});
+
+		const
+		e=document.querySelector('pre'),url=(location.search.slice(1)||'README')+'.md',
+		marked=new Marked(
+			baseUrl(url),
+			markedHighlight({highlight:(code,lang)=>prism.languages[lang]?prism.highlight(code,prism.languages[lang],lang):code}),
+			{breaks:true}
+		);
+
 		(async w=>{
+			e.children[0].textContent=`Loading ${url}...`
 			w=await fetch(url);
 			if(!w.ok)throw`${w.status} - ${w.statusText}`;
 			await(async x=>(
 				x.insertAdjacentHTML('afterbegin',marked.parse(await w.text())),
-				x.querySelectorAll('a[href$=".md"]:not([attr^="http"])').forEach(x=>x.setAttribute('href','?'+x.getAttribute('href').slice(0,-3))),
+				x.querySelectorAll('a[href$=".md"]:not([href^="https://"])').forEach(x=>x.setAttribute('href','?'+x.getAttribute('href').slice(0,-3))),
 				e.replaceWith(x)
 			))(document.createElement('div'));
 		})().catch(w=>e.textContent=w);

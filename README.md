@@ -22,6 +22,7 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitSJIS** Shift-JIS encoder & decoder [doc](docs/sjis.md) [src](sjis.mjs) *596B*
 - **PetitPNG** PNG binary generator [doc](docs/png.md) [src](png.mjs) *1.48kB*
 - **PetitNBT** NBT reader & writer [doc](docs/nbt.md) [src](nbt.mjs) *2.3kB*
+- **PetitQR** QRCode encoder ⛓ [doc](docs/qr.md) [src](qr.mjs) *8.7kB*
 
 ### SVG
 
