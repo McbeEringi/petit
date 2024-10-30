@@ -130,9 +130,10 @@ class QR{
 			))(_=>w.map.forEach(([x,y])=>w.img[y][x]^=!m.fn(x,y)))).sort(({s:a},{s:b})=>a-b)[0].m],
 			w.map.forEach(([x,y])=>w.img[y][x]^=!w.mask.fn(x,y)),w.img.set([w.mask.fmt]),// mask apply
 
-			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
-				Array(s).fill(0<=x&&x<w.size&&0<=y&&y<w.size?w.img[y][x]:0)
-			))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
+			// w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array(w.size+g*2)].flatMap((_,y)=>(y-=g,Array(s).fill([...Array(w.size+g*2)].flatMap((_,x)=>(x-=g,
+			// 	Array(s).fill(0<=x&&x<w.size&&0<=y&&y<w.size?w.img[y][x]:0)
+			// ))).flat())),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
+			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:[...Array((w.size+g*2)*g*s*s).fill(0),...w.img.flatMap(x=>Array(s).fill([...Array(g).fill(0),...x,...Array(g).fill(0)].flatMap(y=>Array(s).fill(y))).flat()),...Array((w.size+g*2)*g*s*s).fill(0)],width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
 			w
 		)
