@@ -10,6 +10,19 @@ thanks to
 - [wikiversity - Reed–Solomon codes for coders](https://en.wikiversity.org/wiki/Reed–Solomon_codes_for_coders)
 
 */
+
+const
+fmap=(w,f)=>[].concat(...w.map(f)),
+bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]],([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[i+vi,j+vj,d]]):[]))
+// .reduce((a,w)=>(
+// 	a=a.reduce((b,x)=>(
+// 		b
+// 	),{a:[],x:0}),
+// 	a.x
+// ),[])
+;
+
+
 class QR{
 	constructor({te=new TextEncoder()}={}){
 		const
@@ -132,9 +145,11 @@ class QR{
 			))(_=>w.map.forEach(([x,y])=>w.img[y][x]^=!m.fn(x,y)))).sort(({s:a},{s:b})=>a-b)[0].m],
 			w.map.forEach(([x,y])=>w.img[y][x]^=!w.mask.fn(x,y)),w.img.set([w.mask.fmt]),// mask apply
 
-			w.toPNG=({bg=0xffffffff,fg=0x000000ff,scale:s=4,padding:g=4}={})=>png({data:((h,v)=>[].concat(
+			w.toPNG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,scale:s=4}={})=>png({data:((h,v)=>[].concat(
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
+
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>bm2p(w.img),
 
 			w
 		)
