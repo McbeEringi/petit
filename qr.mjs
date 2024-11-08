@@ -15,22 +15,18 @@ const
 fmap=(w,f)=>[].concat(...w.map(f)),
 bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]],([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[i+vi,j+vj,d]]):[])).reduce((a,w)=>(
 	a=a.reduce((b,x)=>(
-		b.post.x(x[0])?b.post.a.push(x):
-		b.pre.x(x[x.length-1])?b.pre.a.push(x):
+		!b.post.a&&b.post.x(x[0])?b.post.a=x:
+		!b.pre.a&&b.pre.x(x[x.length-1])?b.pre.a=x:
 		b.a.push(x),
 		b
 	),{
 		a:[],
-		pre :(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]-[1,0,-1,0][i   ],w[1]-[0,-1,0,1][i   ],i])),a:[]}),
-		post:(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:[]})
+		pre :(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]-[1,0,-1,0][i   ],w[1]-[0,-1,0,1][i   ],i])),a:0}),
+		post:(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:0})
 	}),
-	// console.log(w,a),
-	// a.pre.a=a.pre.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[x.length-1][2]-w[2]),a-b)),
-	// a.post.a=a.post.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[0][2]-w[2]),b-a)),
-
-	[...a.a,...a.pre.a.slice(1),...a.post.a.slice(1),[...a.pre.a[0]||[],w,...a.post.a[0]||[]]]
+	[...a.a,[...a.pre.a||[],w,...a.post.a||[]]]
 ),[]).map(w=>(
-	w.map((x,i)=>((i?'':`M${x[0]},${x[1]}`)+`L${x[0]+[1,0,-1,0][x[2]]},${x[1]+[0,-1,0,1][x[2]]}`)).join('')
+	w.map((x,i)=>((i?'':`M${x[0]},${x[1]}`)+['h1','v-1','h-1','v1'][x[2]])).join('')
 )).join('\n');
 
 
