@@ -25,9 +25,11 @@ bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0
 		post:(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:0})
 	}),
 	[...a.a,[...a.pre.a||[],w,...a.post.a||[]]]
-),[]).map(w=>(
-	w.map((x,i)=>((i?'':`M${x[0]},${x[1]}`)+['h1','v-1','h-1','v1'][x[2]])).join('')
-)).join('\n');
+),[]).reduce((a,w)=>(
+	a.a+=w.reduce((b,x)=>(b[b.length-1][0]!=x[2]&&b.push([x[2],0]),b[b.length-1][1]++,b),[[-1,0]]).slice(1,-1).reduce((b,x)=>b+['h','v-','h-','v'][x[0]]+x[1],`m${w[0][0]-a.x[0]},${w[0][1]-a.x[1]}`)+'z',
+	a.x=w[0].slice(0,2),
+	a
+),{a:'M0,0',x:[0,0]}).a;
 
 
 class QR{
@@ -144,7 +146,7 @@ class QR{
 			w.mask=w.lv.mask[~mask?mask:w.lv.mask.map(m=>((fn,l,s)=>(// mask eval
 				w.img.set([m.fmt]),fn(),l=[...Array(w.size)],
 				s=[...w.img,...w.img.map((_,i)=>w.img.map(x=>x[i]))].map(x=>`2222${x.join('')}2222,`).join(''),
-				s=(s.match(/0{5,}|1{5,}/g)||[]).reduce((a,x)=>a+x.length-2,0)+// N1
+				s=(s.match(/([01])\1{4,}/g)||[]).reduce((a,x)=>a+x.length-2,0)+// N1
 					l.slice(1).reduce((a,_,i,ll)=>(ll.forEach((_,j)=>((w.img[i][j]+w.img[i+1][j]+w.img[i][j+1]+w.img[i+1][j+1])&3)||(a+=3)),a),0)+// N2
 					(s.match(/(?<=[02]{4,}1011)101[02]|[02]101(?=1101[02]{4,})/g)||[]).length*40+// N3
 					(Math.abs([].concat(...w.img).filter(x=>x).length/(l.length*l.length)-.5)*20|0)*10,// N4
