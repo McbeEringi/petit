@@ -25,8 +25,8 @@ bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0
 		post:(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:[]})
 	}),
 	// console.log(w,a),
-	a.pre.a=a.pre.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[x.length-1][2]-w[2]),a-b)),
-	a.post.a=a.post.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[0][2]-w[2]),b-a)),
+	// a.pre.a=a.pre.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[x.length-1][2]-w[2]),a-b)),
+	// a.post.a=a.post.a.sort((a,b)=>([a,b]=[a,b].map(x=>4+x[0][2]-w[2]),b-a)),
 
 	[...a.a,...a.pre.a.slice(1),...a.post.a.slice(1),[...a.pre.a[0]||[],w,...a.post.a[0]||[]]]
 ),[]).map(w=>(
