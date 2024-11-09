@@ -12,20 +12,12 @@ thanks to
 */
 
 const
-fmap=(w,f)=>[].concat(...w.map(f)),
-bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]],([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[i+vi,j+vj,d]]):[])).reduce((a,w)=>(
-	a=a.reduce((b,x)=>(
-		!b.post.a&&b.post.d.some(y=>y.every((y,i)=>y==x[0][i]))?b.post.a=x:
-		!b.pre.a&&b.pre.d.some(y=>y.every((y,i)=>y==x[x.length-1][i]))?b.pre.a=x:
-		b.a.push(x),
-		b
-	),{
-		a:[],
-		pre :{d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]-[1,0,-1,0][i   ],w[1]-[0,-1,0,1][i   ],i])),a:0},
-		post:{d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:0}
-	}),
-	[...a.a,[...a.pre.a||[],w,...a.post.a||[]]]
-),[]).map(w=>w.reduce((a,x,i)=>((i&&a[a.length-1].d==x[2])||a.push({p:x.slice(0,2),d:x[2],l:0}),a[a.length-1].l++,a),[]));
+bm2p=(w,{cw=0}={})=>w.flatMap((y,j)=>y.flatMap((x,i)=>x?(cw?[[0,-1,0,0],[-1,0,0,1],[0,1,1,1],[1,0,1,0]]:[[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]]).flatMap(([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[d,i+vi,j+vj]]):[])).reduce((a,w)=>(
+	a=a.reduce((b,x)=>([x[0],x[x.length-1]].reduce((c,y,i)=>(c&&!b.x[i].a&&b.x[i].d.some(x=>x.every((x,i)=>x==y[i]))?(b.x[i].a=x,0):c),1)&&b.a.push(x),b),{a:[],x:[
+		[i=>[1,0,-1,0][w[0]],i=>[0,-1,0,1][w[0]]],[i=>-[1,0,-1,0][i],i=>-[0,-1,0,1][i]]// post pre
+	].map(f=>({d:[...Array(3)].map((_,i)=>[i+=(w[0]^2)<=i,...f.map((f,j)=>w[j+1]+f(i))]),a:0}))}),
+	[...a.a,[...a.x[1].a||[],w,...a.x[0].a||[]]]
+),[]).map(w=>w.reduce((a,x,i)=>((i&&a[a.length-1].d==x[0])||a.push({p:x.slice(1),d:x[0],l:0}),a[a.length-1].l++,a),[]));
 
 
 class QR{
@@ -154,11 +146,13 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>bm2p(w.img).reduce((a,w)=>(
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>(w=>Object.assign(w,{
+				toDataURL:()=>'data:image/svg+xml,'+encodeURIComponent(w),
+				toBlob:()=>new Blob([w],{type:'image/svg+xml'})
+			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${g=[-g,w.size+g*2],g[0]} ${g[0]} ${g[1]} ${g[1]}"><path fill="#${bg.toString(16).padStart(8,0)}" d="M${g[0]},${g[0]}v${g[1]}h${g[1]}v${-g[1]}"/><path fill="#${fg.toString(16).padStart(8,0)}" d="${bm2p(w.img).reduce((a,w)=>(
 				a.a+=w.slice(0,-1).reduce((b,x)=>b+['h','v-','h-','v'][x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',
-				a.p=w[0].p,
-				a
-			),{a:'M0,0',p:[0,0]}).a,
+				a.p=w[0].p,a
+			),{a:'M0,0',p:[0,0]}).a}"/></svg>`),
 
 			w
 		)

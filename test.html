@@ -122,9 +122,9 @@
 		const qr=new QR();
 		(qrbtn.onclick=qrinp.oninput=_=>(async _=>(
 			console.log(_=qr.gen(Function(`return ${qrinp.value};`)())),
-			_.fg=[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join(''),
-			qrimg.src=_.toPNG({fg:+('0x'+_.fg),bg:0}).toDataURL(),
-			qrsvg.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 ${_.size+8} ${_.size+8}" fill="#${_.fg}"><path d="${_.toSVG()}"/></svg>`)
+			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
+			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
+			qrsvg.src=_.toSVG({fg:_.fg,bg:0}).toDataURL()
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
