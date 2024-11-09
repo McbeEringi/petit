@@ -12,7 +12,7 @@ thanks to
 */
 
 const
-bm2p=(w,{cw=0}={})=>w.flatMap((y,j)=>y.flatMap((x,i)=>x?(cw?[[0,-1,0,0],[-1,0,0,1],[0,1,1,1],[1,0,1,0]]:[[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]]).flatMap(([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[d,i+vi,j+vj]]):[])).reduce((a,w)=>(
+bm2p=(w,f=x=>x)=>w.flatMap((y,j)=>y.flatMap((x,i)=>f(x)?[[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]].flatMap(([gi,gj,vi,vj],d)=>w[j+gj]&&(i+gi in w[j+gj])&&f(w[j+gj][i+gi])?[]:[[d,i+vi,j+vj]]):[])).reduce((a,w)=>(
 	a=a.reduce((b,x)=>([x[0],x[x.length-1]].reduce((c,y,i)=>(c&&!b.x[i].a&&b.x[i].d.some(x=>x.every((x,i)=>x==y[i]))?(b.x[i].a=x,0):c),1)&&b.a.push(x),b),{a:[],x:[
 		[i=>[1,0,-1,0][w[0]],i=>[0,-1,0,1][w[0]]],[i=>-[1,0,-1,0][i],i=>-[0,-1,0,1][i]]// post pre
 	].map(f=>({d:[...Array(3)].map((_,i)=>[i+=(w[0]^2)<=i,...f.map((f,j)=>w[j+1]+f(i))]),a:0}))}),
@@ -146,11 +146,11 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>(w=>Object.assign(w,{
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert:inv=0}={})=>(w=>Object.assign(w,{
 				toDataURL:()=>'data:image/svg+xml,'+encodeURIComponent(w),
 				toBlob:()=>new Blob([w],{type:'image/svg+xml'})
-			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${g=[-g,w.size+g*2],g[0]} ${g[0]} ${g[1]} ${g[1]}"><path fill="#${bg.toString(16).padStart(8,0)}" d="M${g[0]},${g[0]}v${g[1]}h${g[1]}v${-g[1]}"/><path fill="#${fg.toString(16).padStart(8,0)}" d="${bm2p(w.img).reduce((a,w)=>(
-				a.a+=w.slice(0,-1).reduce((b,x)=>b+['h','v-','h-','v'][x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',
+			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${g=[-g,w.size+g*2],g[0]} ${g[0]} ${g[1]} ${g[1]}"><path fill="#${bg.toString(16).padStart(8,0)}" d="${g=`M${g[0]},${g[0]}v${g[1]}h${g[1]}v${-g[1]}z`}"/><path fill="#${fg.toString(16).padStart(8,0)}" d="${inv?g:''}${bm2p(w.img).reduce((a,w)=>(
+				a.a+=(inv?w.slice(1).reverse():w.slice(0,-1)).reduce((b,x)=>b+['h','v-','h-','v'][inv?x.d^2:x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',
 				a.p=w[0].p,a
 			),{a:'M0,0',p:[0,0]}).a}"/></svg>`),
 
