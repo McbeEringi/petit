@@ -15,21 +15,17 @@ const
 fmap=(w,f)=>[].concat(...w.map(f)),
 bm2p=w=>fmap(w,(y,j)=>fmap(y,(x,i)=>x?fmap([[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]],([gi,gj,vi,vj],d)=>w[j+gj]&&w[j+gj][i+gi]?[]:[[i+vi,j+vj,d]]):[])).reduce((a,w)=>(
 	a=a.reduce((b,x)=>(
-		!b.post.a&&b.post.x(x[0])?b.post.a=x:
-		!b.pre.a&&b.pre.x(x[x.length-1])?b.pre.a=x:
+		!b.post.a&&b.post.d.some(y=>y.every((y,i)=>y==x[0][i]))?b.post.a=x:
+		!b.pre.a&&b.pre.d.some(y=>y.every((y,i)=>y==x[x.length-1][i]))?b.pre.a=x:
 		b.a.push(x),
 		b
 	),{
 		a:[],
-		pre :(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]-[1,0,-1,0][i   ],w[1]-[0,-1,0,1][i   ],i])),a:0}),
-		post:(a=>(a.x=v=>a.d.some(x=>x.every((x,i)=>x==v[i])),a))({d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:0})
+		pre :{d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]-[1,0,-1,0][i   ],w[1]-[0,-1,0,1][i   ],i])),a:0},
+		post:{d:[...Array(3)].map((_,i)=>((w[2]^2)<=i&&i++,[w[0]+[1,0,-1,0][w[2]],w[1]+[0,-1,0,1][w[2]],i])),a:0}
 	}),
 	[...a.a,[...a.pre.a||[],w,...a.post.a||[]]]
-),[]).reduce((a,w)=>(
-	a.a+=w.reduce((b,x)=>(b[b.length-1][0]!=x[2]&&b.push([x[2],0]),b[b.length-1][1]++,b),[[-1,0]]).slice(1,-1).reduce((b,x)=>b+['h','v-','h-','v'][x[0]]+x[1],`m${w[0][0]-a.x[0]},${w[0][1]-a.x[1]}`)+'z',
-	a.x=w[0].slice(0,2),
-	a
-),{a:'M0,0',x:[0,0]}).a;
+),[]).map(w=>w.reduce((a,x,i)=>((i&&a[a.length-1].d==x[2])||a.push({p:x.slice(0,2),d:x[2],l:0}),a[a.length-1].l++,a),[]));
 
 
 class QR{
@@ -158,7 +154,11 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>bm2p(w.img),
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4}={})=>bm2p(w.img).reduce((a,w)=>(
+				a.a+=w.slice(0,-1).reduce((b,x)=>b+['h','v-','h-','v'][x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',
+				a.p=w[0].p,
+				a
+			),{a:'M0,0',p:[0,0]}).a,
 
 			w
 		)
