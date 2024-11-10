@@ -107,6 +107,16 @@
 				);
 			</script>
 		</div>
+		<div>
+			<h2>trace</h2>
+			<input type="file" id="traceinp" class="zab"> <button id="tracebtn" class="zab bgca">run</button>
+			<script type="module">
+				import{trace,traces}from'./trace.mjs';
+				tracebtn.onclick=async _=>(
+					1
+				);
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>qr</h2>
@@ -114,6 +124,7 @@
 	<button id="qrbtn" class="zab bgca">run</button><br>
 	<style>img{width:min(100%,512px);}</style>
 	<img id="qrimg"><img id="qrsvg">
+	<textarea id="qrlog" class="zab" spellcheck="false"></textarea>
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
 		import{QR,trace}from'./qr.mjs';
@@ -125,7 +136,7 @@
 			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
 			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
 			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:1}).toDataURL(),
-			console.log(_.toKiCAD().SYM())
+			qrlog.textContent=_.toKiCAD().MOD({height:10})
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
