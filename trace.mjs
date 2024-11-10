@@ -5,12 +5,13 @@ trace=(w,f=x=>x)=>(p=>Object.assign(p,{
 		a.p=w[0].p,a
 	),{a:o?'M'+o:'',p:[0,0]}).a,
 	toKiCAD:()=>((p,vg,u)=>({
-		SYM:({name='TracedImage'}={})=>`(kicad_symbol_lib${vg}(symbol "${name}"(symbol "${name}_0_0"\n(polyline${p({flip:1})}(stroke(width -1)(type default))(fill(type outline)))\n)))\n`,
-		MOD:({name='TracedImage'}={})=>`(footprint "${name}"${vg}(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)\n(fp_poly${p()}(stroke(width 0)(type solid))(fill solid)(layer "F.Mask")${u()})\n)\n`,
+		SYM:({name='TracedImage'}={})=>`(kicad_symbol_lib${vg}(symbol "${name}"(symbol "${name}_0_0"\n(polyline${p({rh:1})}(stroke(width -1)(type default))(fill(type outline)))\n)))\n`,
+		MOD:({name='TracedImage',layer='F.Mask'}={})=>`(footprint "${name}"${vg}(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)\n(fp_poly${p()}(stroke(width 0)(type solid))(fill solid)(layer "${layer}")${u()})\n)\n`,
 	}))(
-		({scale:s=1,flip}={})=>'(pts\n'+p.map(x=>'\t'+x.concat(x[0]).map(y=>`(xy ${y.p[0]*s} ${(_=>flip?w.length-_:_)(y.p[1])*s})`).join('')+'\n').join('')+'\n\t'+p.slice(1,-1).reverse().map(x=>`(xy ${x[0].p[0]*s} ${(_=>flip?w.length-_:_)(x[0].p[1])*s})`).join('')+'\n)',
+		({s=1,rh}={})=>'(pts\n'+p.map(x=>'\t'+x.concat(x[0]).map(y=>`(xy ${y.p[0]*s} ${(_=>rh?w.length-_:_)(y.p[1])*s})`).join('')+'\n').join('')+'\n\t'+
+			p.slice(1,-1).reverse().map(x=>`(xy ${x[0].p[0]*s} ${(_=>rh?w.length-_:_)(x[0].p[1])*s})`).join('')+'\n)',
 		'(version 20231120)(generator "PetitTrace")',
-		_=>'(uuid 00000000-0000-4000-1000-000000000000)'.replace(/[01]/g,x=>+x?'89ab'[Math.random()*4|0]:(Math.random()*16|0).toString(16))
+		_=>'(uuid 00000000-0000-4000-1000-000000000000)'.replace(/[01]/g,x=>(+x?Math.random()*4|8:Math.random()*16|0).toString(16))
 	)
 }))(w.flatMap((y,j)=>y.flatMap((x,i)=>f(x)?[[0,1,0,1],[1,0,1,1],[0,-1,1,0],[-1,0,0,0]].flatMap(([gi,gj,vi,vj],d)=>w[j+gj]&&(i+gi in w[j+gj])&&f(w[j+gj][i+gi])?[]:[[d,i+vi,j+vj]]):[])).reduce((a,w)=>(
 	a=a.reduce((b,x)=>([x[0],x[x.length-1]].reduce((c,y,i)=>(c&&!b.x[i].a&&b.x[i].d.some(x=>x.every((x,i)=>x==y[i]))?(b.x[i].a=x,0):c),1)&&b.a.push(x),b),{a:[],x:[
