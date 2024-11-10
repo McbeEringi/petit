@@ -88,6 +88,7 @@ class QR{
 	gen(w=[],{ecl=0,ver=0,mask=-1,te}={}){return(({d,fmap})=>(
 		te||(te=d.te),
 		w={
+			data_raw:w,
 			data_enc:w.map(w=>d.mode.reduce((a,d,x)=>a||(x=d.enc(w,te))&&({
 				mode:{name:d.name,x:1<<d.i,l:4,s:d.i},len:{x:x.l,l:d.l},data:Object.assign(x.x,{l:x.x.reduce((a,x)=>a+x.l,0)})
 			}),null))
@@ -146,7 +147,7 @@ class QR{
 	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,origin:[g[0],g[0]]})}"/>
 </svg>`),
 
-			w.toKiCAD=()=>trace(w.img).toKiCAD(),
+			w.toKiCAD=({generator='PetitQR',name='QRCode: '+w.data_raw}={})=>trace(w.img).toKiCAD({generator,name}),
 
 			w
 		)
