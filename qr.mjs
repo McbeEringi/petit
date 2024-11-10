@@ -1,5 +1,5 @@
 import{png}from'./png.mjs';
-import{trace}from'./trace.mjs';
+import{trace,traces}from'./trace.mjs';
 /*
 
 thanks to
@@ -138,17 +138,19 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert:inv=0}={})=>(w=>Object.assign(w,{
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert,absolute}={})=>(w=>Object.assign(w,{
 				toDataURL:()=>'data:image/svg+xml,'+encodeURIComponent(w),
 				toBlob:()=>new Blob([w],{type:'image/svg+xml'})
-			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}"><path fill="#${bg.toString(16).padStart(8,0)}" d="${g[1]=`M0,0v${g[1]}h${g[1]}v${-g[1]}z`}"/><path fill="#${fg.toString(16).padStart(8,0)}" d="${inv?g[1]:''}${trace(w.img).reduce((a,w)=>(
-				a.a+=(inv?w.slice(1).reverse():w.slice(0,-1)).reduce((b,x)=>b+['h','v-','h-','v'][inv?x.d^2:x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',
-				a.p=w[0].p,a
-			),{a:'M'+[g[0],g[0]],p:[0,0]}).a}"/></svg>`),
+			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}">
+	<path fill="#${bg.toString(16).padStart(8,0)}" d="${g[1]=`M0,0v${g[1]}h${g[1]}v${-g[1]}z`}"/>
+	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,origin:[g[0],g[0]]})}"/>
+</svg>`),
+
+			w.toKiCAD=()=>trace(w.img).toKiCAD(),
 
 			w
 		)
 	))(this);}
 }
 
-export{QR,png};
+export{QR,png,trace,traces};
