@@ -3,12 +3,12 @@ trace=(w,f=x=>x)=>((p,e)=>Object.assign(p,{
 	toSVGPath:({invert:inv,absolute:abs,origin:o}={})=>abs?p.map(w=>(inv?w.slice().reverse():w).map((x,i)=>('ML'[i]||',')+x.p.map((x,i)=>x+(o[i]||0))).join('')+'Z').join(''):p.reduce((a,w)=>(
 		a.a+=(inv?w.slice(1).reverse():w.slice(0,-1)).reduce((b,x)=>b+['h','v-','h-','v'][inv?x.d^2:x.d]+x.l,`m${a.p.map((x,i)=>w[0].p[i]-x)}`)+'z',a.p=w[0].p,a
 	),{a:o?'M'+o:'',p:[0,0]}).a,
-	toKiCAD:({generator:gen='PetitTrace',name='TracedImage'}={})=>((p,vg,u)=>({pts:p,
-		SYM:({name:n=name,height:h=25.4}={})=>`(kicad_symbol_lib${vg}(symbol "${n=e(n)}"(symbol "${n}_0_0"\n(polyline${p({scale:h/w.length,flip:1})}(stroke(width -1)(type default))(fill(type outline)))\n)))\n`,
-		MOD:({name:n=name,layer:l='F.Mask',height:h=10}={})=>`(footprint "${e(n)}"${vg}(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)\n(fp_poly${p({scale:h/w.length})}(stroke(width 0)(type solid))(fill solid)(layer "${l}")${u()})\n)\n`,
+	toKiCAD:({generator:gen='PetitTrace',name:n='TracedImage'}={})=>((p,vg,u)=>({pts:p,
+		SYM:({height:h=25.4}={})=>`(kicad_symbol_lib${vg}(symbol "${n=e(n)}"(symbol "${n}_0_0"\n(polyline${p({scale:h/w.length,flip:1})}(stroke(width -1)(type default))(fill(type outline)))\n)))\n`,
+		MOD:({layer:l='F.Mask',height:h=10}={})=>`(footprint "${e(n)}"${vg}(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)\n(fp_poly${p({scale:h/w.length})}(stroke(width 0)(type solid))(fill solid)(layer "${l}")${u()})\n)\n`,
 	}))(
 		({scale:s=1,flip:rh,invert:inv}={})=>('(pts\n'+p.map(x=>'\t'+(inv?x.slice().reverse():x).concat(x[0]).map(y=>`(xy ${y.p[0]*s} ${(_=>rh?w.length-_:_)(y.p[1])*s})`).join('')+'\n').join('')+'\n\t'+
-			p.slice(1,-1).reverse().map(x=>`(xy ${x[0].p[0]*s} ${(_=>rh?w.length-_:_)(x[0].p[1])*s})`).join('')+'\n)').replace(/\.?0{4,}\d(\D)/g,'$1'),
+			p.slice(1,-1).reverse().map(x=>`(xy ${x[0].p[0]*s} ${(_=>rh?w.length-_:_)(x[0].p[1])*s})`).join('')+'\n)').replace(/\.?0{4,}\d(?=\D|$)/g,''),
 		`(version 0)(generator "${e(gen)}")`,_=>'(uuid 00000000-0000-4000-1000-000000000000)'.replace(/[01]/g,x=>(+x?Math.random()*4|8:Math.random()*16|0).toString(16))
 	)
 }))(
