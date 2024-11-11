@@ -11,7 +11,7 @@ trace=(w,f=x=>x)=>Object.assign(
 			a.a+=(inv?w.slice(1).reverse():w.slice(0,-1)).reduce((b,x)=>b+['h','v-','h-','v'][inv?x.d^2:x.d]+x.l*s,`m${a.p.map((x,i)=>(w[0].p[i]-x)*s)}`)+'z',a.p=w[0].p,a
 		),{a:'M'+o,p:[0,0]}).a,
 		toKiCADPts:({offset:o=[0,0],scale:s=1,invert:inv,flipY:rh}={})=>((xy=a=>`(xy ${o[0]+a[0]*s} ${o[1]+(rh?w.length-a[1]:a[1])*s})`)=>f.map(x=>x.concat(x[0])[inv?'reverse':'slice']().map(y=>xy(y.p)).join('')).concat(
-			f.slice(1,-1).reverse().map(x=>xy(x[0].p)).join('')
+			f.slice(0,-1).reverse().map(x=>xy(x[0].p)).join('')
 		).join('\n').replace(/\.?0{4,}\d(?=\D|$)/g,''))()
 	}
 );
