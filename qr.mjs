@@ -1,5 +1,5 @@
 import{png}from'./png.mjs';
-import{trace,traces}from'./trace.mjs';
+import{trace}from'./trace.mjs';
 /*
 
 thanks to
@@ -21,71 +21,75 @@ class QR{
 			(j,i)=>(i+j)%2,(j,i)=>i%2,(j,i)=>j%3,(j,i)=>(i+j)%3,(j,i)=>((i/2|0)+(j/3|0))%2,(j,i)=>(i*j)%2+(i*j)%3,(j,i)=>((i*j)%2+(i*j)%3)%2,(j,i)=>((i+j)%2+(i*j)%3)%2
 		]);
 
-		this.fmap=fmap;
-		this.d={
-			te,
-			mode:[
-				{i:0,name:'NUM',l:[10,12,14],enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
-					{x:isNaN(+x)?w.e=1:+x,l:[,4,7,10][x.length]}
-				)),w.e?null:w)},
-				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/2))].map((x,i)=>w.e||(x=[...w.x.slice(2*i,2*++i)],
-					{x:x.reduce((a,x)=>(x in d.dict?a*45+d.dict[x]:w.e=1),0),l:[,6,11][x.length]}
-				)),w.e?null:w),d))({i:1,name:'EISU',dict:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{}),l:[9,11,13]}),
-				(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...w.x].map(x=>w.e||(
-					{x:x in d.dict?d.dict[x]:w.e=1,l:13}
-				)),w.e?null:w),d))({i:3,name:'KANJI',dict:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
-					a[td_sjis.decode(new Uint8Array([y,x]))]=(y-(0x9f<y?0xc1:0x81))*0xc0+x-0x40
-				)),a),{}),l:[8,10,12]}),
-				{i:2,name:'OCT',l:[8,16,16],enc:(w,e)=>(w=[...e.encode(w)].map(x=>({x,l:8})),{x:w,l:w.length})}
-			],
-			mode_len:[[1,10],[10,27],[27]],
-			ver:[// [...ec,...ap] ec[lv=0~3]:[short_data_l,short_blk_n(,long_blk_n)], ap:[6,...ap,l-7]
-				,// empty slot
-				[[19,1],[16,1],[13,1],[9,1]],[[34,1],[28,1],[22,1],[16,1]],
-				[[55,1],[44,1],[17,2],[13,2]],[[80,1],[32,2],[24,2],[9,4]],
-				[[108,1],[43,2],[15,2,2],[11,2,2]],[[68,2],[27,4],[19,4],[15,4]],
-				[[78,2],[31,4],[14,2,4],[13,4,1],22],[[97,2],[38,2,2],[18,4,2],[14,4,2],24],
-				[[116,2],[36,3,2],[16,4,4],[12,4,4],26],[[68,2,2],[43,4,1],[19,6,2],[15,6,2],28],
-				[[81,4],[50,1,4],[22,4,4],[12,3,8],30],[[92,2,2],[36,6,2],[20,4,6],[14,7,4],32],
-				[[107,4],[37,8,1],[20,8,4],[11,12,4],34],[[115,3,1],[40,4,5],[16,11,5],[12,11,5],26,46],
-				[[87,5,1],[41,5,5],[24,5,7],[12,11,7],26,48],[[98,5,1],[45,7,3],[19,15,2],[15,3,13],26,50],
-				[[107,1,5],[46,10,1],[22,1,15],[14,2,17],30,54],[[120,5,1],[43,9,4],[22,17,1],[14,2,19],30,56],
-				[[113,3,4],[44,3,11],[21,17,4],[13,9,16],30,58],[[107,3,5],[41,3,13],[24,15,5],[15,15,10],34,62],
-				[[116,4,4],[42,17],[22,17,6],[16,19,6],28,50,72],[[111,2,7],[46,17],[24,7,16],[13,34],26,50,74],
-				[[121,4,5],[47,4,14],[24,11,14],[15,16,14],30,54,78],[[117,6,4],[45,6,14],[24,11,16],[16,30,2],28,54,80],
-				[[106,8,4],[47,8,13],[24,7,22],[15,22,13],32,58,84],[[114,10,2],[46,19,4],[22,28,6],[16,33,4],30,58,86],
-				[[122,8,4],[45,22,3],[23,8,26],[15,12,28],34,62,90],[[117,3,10],[45,3,23],[24,4,31],[15,11,31],26,50,74,98],
-				[[116,7,7],[45,21,7],[23,1,37],[15,19,26],30,54,78,102],[[115,5,10],[47,19,10],[24,15,25],[15,23,25],26,52,78,104],
-				[[115,13,3],[46,2,29],[24,42,1],[15,23,28],30,56,82,108],[[115,17],[46,10,23],[24,10,35],[15,19,35],34,60,86,112],
-				[[115,17,1],[46,14,21],[24,29,19],[15,11,46],30,58,86,114],[[115,13,6],[46,14,23],[24,44,7],[16,59,1],34,62,90,118],
-				[[121,12,7],[47,12,26],[24,39,14],[15,22,41],30,54,78,102,126],[[121,6,14],[47,6,34],[24,46,10],[15,2,64],24,50,76,102,128],
-				[[122,17,4],[46,29,14],[24,49,10],[15,24,46],28,54,80,106,132],[[122,4,18],[46,13,32],[24,48,14],[15,42,32],32,58,84,110,136],
-				[[117,20,4],[47,40,7],[24,43,22],[15,10,67],26,54,82,110,138],[[118,19,6],[47,18,31],[24,34,34],[15,20,61],30,58,86,114,142]
-			].map((w,v)=>(
-				w={_:w,v,size:17+v*4},
-				w.align=v==1?[]:[6,...w._.slice(4),w.size-7],
-				w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
-				w.lv=w._.slice(0,4).map((x,lv)=>(
-					x=fmap(x.slice(1),(l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
-					x.err=(w.cap-x.cap)/x.blocks.length,x.mask=mask[lv],x
+		Object.assign(this,{
+			fmap,
+			file:(w,m='text/plain')=>Object.assign(w,{toDataURL:()=>`data:${m},${encodeURIComponent(w)}`,toBlob:()=>new Blob([w],{type:m})}),
+			esc:(w,e='"\\\\')=>w.replace(new RegExp(`([${e}])`,'g'),'\\$1'),
+			d:{
+				te,
+				mode:[
+					{i:0,name:'NUM',l:[10,12,14],enc:w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/3))].map((x,i)=>w.e||(x=w.x.slice(3*i,3*++i),
+						{x:isNaN(+x)?w.e=1:+x,l:[,4,7,10][x.length]}
+					)),w.e?null:w)},
+					(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...Array(Math.ceil(w.l/2))].map((x,i)=>w.e||(x=[...w.x.slice(2*i,2*++i)],
+						{x:x.reduce((a,x)=>(x in d.dict?a*45+d.dict[x]:w.e=1),0),l:[,6,11][x.length]}
+					)),w.e?null:w),d))({i:1,name:'EISU',dict:[...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'].reduce((a,x,i)=>(a[x]=i,a),{}),l:[9,11,13]}),
+					(d=>(d.enc=w=>(w={x:w,l:w.length},w.x=[...w.x].map(x=>w.e||(
+						{x:x in d.dict?d.dict[x]:w.e=1,l:13}
+					)),w.e?null:w),d))({i:3,name:'KANJI',dict:[...Array(86)].reduce((a,y,_y)=>(y=(_y/2|0)+0x81+0x40*(61<_y),[...Array(_y==85?33:94)].forEach((_,x)=>(x+=_y&1?0x9f:0x40+(62<x),
+						a[td_sjis.decode(new Uint8Array([y,x]))]=(y-(0x9f<y?0xc1:0x81))*0xc0+x-0x40
+					)),a),{}),l:[8,10,12]}),
+					{i:2,name:'OCT',l:[8,16,16],enc:(w,e)=>(w=[...e.encode(w)].map(x=>({x,l:8})),{x:w,l:w.length})}
+				],
+				mode_len:[[1,10],[10,27],[27]],
+				ver:[// [...ec,...ap] ec[lv=0~3]:[short_data_l,short_blk_n(,long_blk_n)], ap:[6,...ap,l-7]
+					,// empty slot
+					[[19,1],[16,1],[13,1],[9,1]],[[34,1],[28,1],[22,1],[16,1]],
+					[[55,1],[44,1],[17,2],[13,2]],[[80,1],[32,2],[24,2],[9,4]],
+					[[108,1],[43,2],[15,2,2],[11,2,2]],[[68,2],[27,4],[19,4],[15,4]],
+					[[78,2],[31,4],[14,2,4],[13,4,1],22],[[97,2],[38,2,2],[18,4,2],[14,4,2],24],
+					[[116,2],[36,3,2],[16,4,4],[12,4,4],26],[[68,2,2],[43,4,1],[19,6,2],[15,6,2],28],
+					[[81,4],[50,1,4],[22,4,4],[12,3,8],30],[[92,2,2],[36,6,2],[20,4,6],[14,7,4],32],
+					[[107,4],[37,8,1],[20,8,4],[11,12,4],34],[[115,3,1],[40,4,5],[16,11,5],[12,11,5],26,46],
+					[[87,5,1],[41,5,5],[24,5,7],[12,11,7],26,48],[[98,5,1],[45,7,3],[19,15,2],[15,3,13],26,50],
+					[[107,1,5],[46,10,1],[22,1,15],[14,2,17],30,54],[[120,5,1],[43,9,4],[22,17,1],[14,2,19],30,56],
+					[[113,3,4],[44,3,11],[21,17,4],[13,9,16],30,58],[[107,3,5],[41,3,13],[24,15,5],[15,15,10],34,62],
+					[[116,4,4],[42,17],[22,17,6],[16,19,6],28,50,72],[[111,2,7],[46,17],[24,7,16],[13,34],26,50,74],
+					[[121,4,5],[47,4,14],[24,11,14],[15,16,14],30,54,78],[[117,6,4],[45,6,14],[24,11,16],[16,30,2],28,54,80],
+					[[106,8,4],[47,8,13],[24,7,22],[15,22,13],32,58,84],[[114,10,2],[46,19,4],[22,28,6],[16,33,4],30,58,86],
+					[[122,8,4],[45,22,3],[23,8,26],[15,12,28],34,62,90],[[117,3,10],[45,3,23],[24,4,31],[15,11,31],26,50,74,98],
+					[[116,7,7],[45,21,7],[23,1,37],[15,19,26],30,54,78,102],[[115,5,10],[47,19,10],[24,15,25],[15,23,25],26,52,78,104],
+					[[115,13,3],[46,2,29],[24,42,1],[15,23,28],30,56,82,108],[[115,17],[46,10,23],[24,10,35],[15,19,35],34,60,86,112],
+					[[115,17,1],[46,14,21],[24,29,19],[15,11,46],30,58,86,114],[[115,13,6],[46,14,23],[24,44,7],[16,59,1],34,62,90,118],
+					[[121,12,7],[47,12,26],[24,39,14],[15,22,41],30,54,78,102,126],[[121,6,14],[47,6,34],[24,46,10],[15,2,64],24,50,76,102,128],
+					[[122,17,4],[46,29,14],[24,49,10],[15,24,46],28,54,80,106,132],[[122,4,18],[46,13,32],[24,48,14],[15,42,32],32,58,84,110,136],
+					[[117,20,4],[47,40,7],[24,43,22],[15,10,67],26,54,82,110,138],[[118,19,6],[47,18,31],[24,34,34],[15,20,61],30,58,86,114,142]
+				].map((w,v)=>(
+					w={_:w,v,size:17+v*4},
+					w.align=v==1?[]:[6,...w._.slice(4),w.size-7],
+					w.cap=(w.size**2-(192+Math.max(0,w.align.length**2-3)*25+(w.size-16-Math.max(0,w.align.length-2)*5)*2)-(31+(6<v)*36))>>3,// データ容量 (size-(pos+align+timing)-info)/8 cf.p17表1
+					w.lv=w._.slice(0,4).map((x,lv)=>(
+						x=fmap(x.slice(1),(l,i)=>Array(l).fill(x[0]+i)).reduce((a,l)=>(a.blocks.push([a.cap,a.cap+=l]),a),{lv,blocks:[],cap:0}),
+						x.err=(w.cap-x.cap)/x.blocks.length,x.mask=mask[lv],x
+					)),
+					w.info=v<7?[]:bch({x:v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]),
+					delete w._,w
 				)),
-				w.info=v<7?[]:bch({x:v,l:6},{x:7973,l:12}).map((x,i)=>[-9-i%3,5-(i/3|0),+x]),
-				delete w._,w
-			)),
 
-			rs:(({exp,log,mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255]})=>
-				(w,n)=>w.reduce((a,_,i)=>(a.a[i]&&a.g.forEach((x,j)=>a.a[i+j+1]^=mul(x,a.a[i])),a),{a:w.slice(),
-					g:[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
-				}).a.slice(-n)
-			)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
+				rs:(({exp,log,mul=(x,y)=>x&&y&&(x=log[x]+log[y],exp[x]||exp[x-255]),pow=(x,y)=>exp[(log[x]*y)%255]})=>
+					(w,n)=>w.reduce((a,_,i)=>(a.a[i]&&a.g.forEach((x,j)=>a.a[i+j+1]^=mul(x,a.a[i])),a),{a:w.slice(),
+						g:[...Array(n)].reduce((b,_,k)=>[1,pow(2,k)].reduce((a,y,j)=>(b.forEach((x,i)=>a[i+j]^=mul(x,y)),a),[]),[1]).slice(1)
+					}).a.slice(-n)
+				)([...Array(255)].reduce((a,_,i)=>(a.exp[i]=a.x,a.log[a.x]=i,a.x*=2,(a.x>255)&&(a.x^=0x11d),a),{x:1,exp:[],log:[]})),
 
-			img:l=>(d=>Object.assign(d,{
-				set:(w,{xy=0}={})=>([].concat(...w).forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d)
-			}))([...Array(l)].map(_=>[...Array(l)].fill(-1))),
-			patt:(x,y,l,r=(l-1)/2)=>fmap([...Array(l)],(_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,+(Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1)]))
-		};
+				img:l=>(d=>Object.assign(d,{
+					set:(w,{xy=0}={})=>([].concat(...w).forEach(([x,y,v])=>(d[y+=(y<0&&l)][x+=(x<0&&l)]=v,xy&&(d[x][y]=v))),d)
+				}))([...Array(l)].map(_=>[...Array(l)].fill(-1))),
+				patt:(x,y,l,r=(l-1)/2)=>fmap([...Array(l)],(_,j)=>[...Array(l)].map((_,i)=>[x+i,y+j,+(Math.max(Math.abs(i-r),Math.abs(j-r))!=r-1)]))
+			}
+		});
 	}
-	gen(w=[],{ecl=0,ver=0,mask=-1,te}={}){return(({d,fmap})=>(
+	gen(w=[],{ecl=0,ver=0,mask=-1,te}={}){return(({d,fmap,file})=>(
 		te||(te=d.te),
 		w={
 			data_raw:w,
@@ -139,19 +143,27 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert,absolute}={})=>(w=>Object.assign(w,{
-				toDataURL:()=>'data:image/svg+xml,'+encodeURIComponent(w),
-				toBlob:()=>new Blob([w],{type:'image/svg+xml'})
-			}))(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}">
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert,absolute}={})=>file(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}">
 	<path fill="#${bg.toString(16).padStart(8,0)}" d="${g[1]=`M0,0v${g[1]}h${g[1]}v${-g[1]}z`}"/>
-	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,origin:[g[0],g[0]]})}"/>
-</svg>`),
+	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,offset:[g[0],g[0]]})}"/>
+</svg>`,'image/svg+xml'),
 
-			w.toKiCAD=({generator='PetitQR',name='QRCode: '+w.data_raw}={})=>trace(w.img).toKiCAD({generator,name}),
+			w.toKiCAD_MOD=({name='QRCode: '+w.data_raw}={})=>trace(w.img).toKiCADPts(),
+			w.toKiCAD_SYM=({name='QRCode: '+w.data_raw}={})=>trace(w.img).toKiCADPts(),
+
+	// toKiCAD:({generator:gen='PetitTrace',name:n='TracedImage'}={})=>(p=>({pts:p,
+	// 	SYM:({height:h=25.4}={})=>file(`(kicad_symbol_lib(version 0)(generator "${esc(gen)}")(symbol "${n=esc(n)}"(symbol "${n}_0_0"\n(polyline${p({scale:h/w.length,flip:1})}(stroke(width -1)(type default))(fill(type outline)))\n)))\n`),
+	// 	MOD:({layer:l='F.Mask',height:h=10}={})=>file(`(footprint "${esc(n)}"(version 0)(generator "${esc(gen)}")(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)\n(fp_poly${p({scale:h/w.length})}(stroke(width 0)(type solid))(fill solid)(layer "${l}")${
+	// 		'(uuid 00000000-0000-4000-1000-000000000000)'.replace(/[01]/g,x=>(+x?Math.random()*4|8:Math.random()*16|0).toString(16))
+	// 	})\n)\n`),
+	// }))(
+	// 	({scale:s=1,flipY:rh,invert:inv}={})=>('(pts\n'+p.map(x=>'\t'+(inv?x.slice().reverse():x).concat(x[0]).map(y=>`(xy ${y.p[0]*s} ${(_=>rh?w.length-_:_)(y.p[1])*s})`).join('')+'\n').join('')+'\n\t'+
+	// 		p.slice(1,-1).reverse().map(x=>`(xy ${x[0].p[0]*s} ${(_=>rh?w.length-_:_)(x[0].p[1])*s})`).join('')+'\n)').replace(/\.?0{4,}\d(?=\D|$)/g,'')
+	// )
 
 			w
 		)
 	))(this);}
 }
 
-export{QR,png,trace,traces};
+export{QR,png,trace};

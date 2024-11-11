@@ -111,7 +111,7 @@
 			<h2>trace</h2>
 			<input type="file" id="traceinp" class="zab"> <button id="tracebtn" class="zab bgca">run</button>
 			<script type="module">
-				import{trace,traces}from'./trace.mjs';
+				import{trace}from'./trace.mjs';
 				tracebtn.onclick=async _=>(
 					1
 				);
@@ -135,8 +135,8 @@
 			console.log(_=qr.gen(Function(`return ${qrinp.value};`)())),
 			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
 			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
-			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:1}).toDataURL(),
-			qrlog.value=_.toKiCAD().MOD({height:10})
+			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:0}).toDataURL(),
+			qrlog.value=_.toKiCAD_MOD({height:10})
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
