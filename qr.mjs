@@ -149,12 +149,13 @@ class QR{
 </svg>
 `,'image/svg+xml'),
 
-			w.toKiCAD_MOD=({generator:gen='PetitQR',name:n='QRCode: '+w.data_raw,invert:inv,padding:g=4,size:s=10,layer:l='F.Mask'}={})=>file(`(footprint "${s={s,x:s/w.size},g=[...Array(5)].map((_,i)=>`(xy ${(i+3&2)?s.s+g*s.x:-g*s.x} ${(i&2)?s.s+g*s.x:-g*s.x})`).join(''),esc(n)}"(version 0)(generator "${esc(gen)}")(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)
+			w.toKiCAD_MOD=({generator:gen='PetitQR',name:n=w.data_raw.join(''),invert:inv,padding:g=4,size:s=10,layer:l='F.Mask'}={})=>file(`(footprint "${s={s,x:s/w.size},g=[...Array(5)].map((_,i)=>`(xy ${(i+3&2)?s.s+g*s.x:-g*s.x} ${(i&2)?s.s+g*s.x:-g*s.x})`).join(''),'QRCODE'}"(version 0)(generator "${esc(gen)}")(layer "F.Cu")(attr board_only exclude_from_pos_files exclude_from_bom)
+(property "Value" "${esc(n)}")
 (fp_poly(pts\n${inv?g+'\n':''}${trace(w.img).toKiCADPts({invert:inv,scale:s.x})}\n)(stroke(width 0)(type solid))(fill solid)(layer "${l}"))
 (fp_poly(pts\n${g}\n)(stroke(width 0.05)(type default))(fill none)(layer "F.CrtYd"))
 )
 `),
-			w.toKiCAD_SYM=({generator:gen='PetitQR',name:n='QRCode',invert:inv,padding:g=4,size:s=25.4}={})=>file(`(kicad_symbol_lib(version 0)(generator "${s={s,x:s/w.size},g=[...Array(5)].map((_,i)=>`(xy ${(i&2)?s.s+g*s.x:-g*s.x} ${(i+3&2)?s.s+g*s.x:-g*s.x})`).join(''),esc(gen)}")(symbol "${n=esc(n)}"(symbol "${n}_0_0"
+			w.toKiCAD_SYM=({generator:gen='PetitQR',name:n='QRCode',invert:inv,padding:g=4,size:s=25.4}={})=>file(`(kicad_symbol_lib(version 0)(generator "${s={s,x:s/w.size},g=[...Array(5)].map((_,i)=>`(xy ${(i&2)?s.s+g*s.x:-g*s.x} ${(i+3&2)?s.s+g*s.x:-g*s.x})`).join(''),esc(gen)}")(symbol "QRCODE"(symbol "QRCODE_0_0"
 (polyline(pts\n${inv?g+'\n':''}${trace(w.img).toKiCADPts({invert:inv,scale:s.x,flipY:1})}\n)(stroke(width -1)(type default))(fill(type outline)))
 )))
 `),
