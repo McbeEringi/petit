@@ -136,7 +136,7 @@
 			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
 			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
 			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:0}).toDataURL(),
-			qrlog.value=_.toKiCAD_MOD({size:20,invert:0})
+			qrlog.value=_.toKiCAD_SYM({invert:1})
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
