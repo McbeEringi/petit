@@ -143,11 +143,10 @@ class QR{
 				h,...w.img.map(x=>[].concat(...Array(s).fill(fmap([].concat(v,x,v),y=>Array(s).fill(y))))),h
 			))(Array((w.size+g*2)*g*s*s).fill(0),Array(g).fill(0)),width:(w.size+g*2)*s,height:(w.size+g*2)*s,palette:[bg,fg,0x66ccaaff],alpha:1}),
 
-			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert,absolute}={})=>file(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}">
-${
-	g[1]=`M0,0v${g[1]}h${g[1]}v${-g[1]}z`,
-	bg?`\t<path fill="#${bg.toString(16).padStart(8,0)}" d="${g[1]}"/>\n`:''
-}	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,offset:[g[0],g[0]]})}"/>
+			w.toSVG=({bg=0xffffffff,fg=0x000000ff,padding:g=4,invert,absolute}={})=>file(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g=[g,w.size+g*2],g[1]} ${g[1]}">${
+	g[1]=`M0,0v${g[1]}h${g[1]}v${-g[1]}z`,bg?`\t<path fill="#${bg.toString(16).padStart(8,0)}" d="${g[1]}"/>\n`:''
+}
+	<path fill="#${fg.toString(16).padStart(8,0)}" d="${invert?g[1]:''}${trace(w.img).toSVGPath({invert,absolute,offset:[g[0],g[0]]})}"/>
 </svg>
 `,'image/svg+xml'),
 

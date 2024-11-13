@@ -110,10 +110,21 @@
 		<div>
 			<h2>trace</h2>
 			<input type="file" id="traceinp" class="zab"> <button id="tracebtn" class="zab bgca">run</button>
+			<img id="traceimg">
 			<script type="module">
 				import{trace}from'./trace.mjs';
-				tracebtn.onclick=async _=>(
-					1
+				tracebtn.onclick=async w=>(
+					await Object.assign(w.img=new Image(),{src:URL.createObjectURL(traceinp.files[0])}).decode(),
+					w.ctx=new OffscreenCanvas(w.img.width,w.img.height).getContext('2d'),
+					w.ctx.drawImage(w.img,0,0),
+					w=w.ctx.getImageData(0,0,w.img.width,w.img.height),
+					w=Array(w.height).fill(Array(w.data.length/4).fill([...w.data]).map((x,i)=>x.slice(4*i++,4*i))).map((x,i)=>x.slice(w.width*i++,w.width*i)),
+					w=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w[0].length} ${w.length}">\n${
+						[...new Set([].concat(...w).map(x=>x+''))].map(x=>`<path fill="#${
+							x.split(',').map((x,i)=>(x=(+x).toString(16).padStart(2,0),i==3&&x=='ff'?'':x)).join('')
+						}" d="${trace(w,y=>y==x).toSVGPath()}"/>\n`).join('')}</svg>\n`,
+					traceimg.src='data:image/svg+xml,'+encodeURIComponent(w),
+					console.log(w)
 				);
 			</script>
 		</div>
