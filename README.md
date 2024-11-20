@@ -1,6 +1,6 @@
 # PetitJS
 
-![icon](img/icon.svg)
+![logo](img/logo.svg)
 
 PetitJS - set of *petit* and useful JS libs
 

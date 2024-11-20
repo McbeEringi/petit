@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 16 8">
+	<desc>Petit text</desc>
+	<g style="fill:none;stroke:#6ca;stroke-width:.5;stroke-linecap:round;stroke-linejoin:round;" transform="translate(8,4)scale(.6)">
+	<path d="
+		M-7,3v-4a2,2,0,1,1,2,2m2,2
+		m1,0m2,-2h2a2,2,0,1,0,-2,2m2,0
+		m1,0m0,-2h1m-1,-1v2a1,1,0,0,0,1,1
+		m1,0 v-2 m0,-1v0m0,3
+		m1,0m0,-2h1m-1,-1v2a1,1,0,0,0,1,1
+	"/>
+	</g>
+</svg>
