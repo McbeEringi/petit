@@ -12,7 +12,7 @@ totp=async({date:t=new Date,algorithm:h='SHA-1',digits:l=6,period:d=30,secret:k=
 		new Uint8Array([...be4((t=t.getTime()/1000/d)/2**32),...be4(t)])
 	))]
 ),
-migurl=w=>depb(new TextEncoder().encode(atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data'))))).map(x=>(
+migurl=w=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).map(x=>(
 	x.i==1&&(x=depb(x.value)),x
 ));
 
