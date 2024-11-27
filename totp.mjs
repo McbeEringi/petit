@@ -12,30 +12,26 @@ totp=async({date:t=new Date,algorithm:h='SHA-1',digits:l=6,period:d=30,secret:k=
 		new Uint8Array([...be4((t=t.getTime()/1000/d)/2**32),...be4(t)])
 	))]
 ),
-migurl=w=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).flatMap(x=>x.i==1?[
-	depb(x.value).reduce((a,x)=>([,
-		x=>a.secret=x,
-		x=>a.name=new TextDecoder().decode(x),
-		x=>a.issuer=new TextDecoder().decode(x),
+migurl=w=>((
+	td=new TextDecoder(),
+	b32en=w=>(x=>[...Array(Math.ceil(x.length/5))].map(
+		(_,i)=>'abcdefghijklmnopqrstuvwxyz234567'[+`0b${x.slice(5*i++,5*i).padEnd(5,0)}`]
+	).join('').padEnd(Math.ceil(x.length/40)*8,'='))(w.reduce((a,x)=>a+x.toString(2).padStart(8,0),''))
+)=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).flatMap(x=>x.i==1?[
+	depb(x.value).reduce((a,x)=>(([,
+		x=>a.secret={raw:x,base32:b32en(x)},
+		x=>a.name=td.decode(x),
+		x=>a.issuer=td.decode(x),
 		x=>a.algorithm=[,'SHA-1','SHA-256','SHA-512','MD5'][x],
 		x=>a.digits=[,6,8][x],
 		x=>a.type=[,'HOTP','TOTP'][x],
 		x=>a.conter=x
-	][x.i](x.value),a),{})
-]:[]);
+	][x.i]||(y=>a[x.i]=y))(x.value),a),{})
+]:[]))();
 
 export{totp};
 
-console.log(
-	new Date(),
-	await totp({
-		secret:'helloworld234567',
-	})
-);
-const url='otpauth-migration://offline?data=CiQKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAIQAhgBIAA%3D';
-console.log(
-	migurl(url)
-);
+console.log(Date.now(),await totp({secret:'helloworld234567'}),migurl('otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'));
 
 
 
