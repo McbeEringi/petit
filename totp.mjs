@@ -12,9 +12,17 @@ totp=async({date:t=new Date,algorithm:h='SHA-1',digits:l=6,period:d=30,secret:k=
 		new Uint8Array([...be4((t=t.getTime()/1000/d)/2**32),...be4(t)])
 	))]
 ),
-migurl=w=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).map(x=>(
-	x.i==1&&(x=depb(x.value)),x
-));
+migurl=w=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).flatMap(x=>x.i==1?[
+	depb(x.value).reduce((a,x)=>([,
+		x=>a.secret=x,
+		x=>a.name=new TextDecoder().decode(x),
+		x=>a.issuer=new TextDecoder().decode(x),
+		x=>a.algorithm=[,'SHA-1','SHA-256','SHA-512','MD5'][x],
+		x=>a.digits=[,6,8][x],
+		x=>a.type=[,'HOTP','TOTP'][x],
+		x=>a.conter=x
+	][x.i](x.value),a),{})
+]:[]);
 
 export{totp};
 

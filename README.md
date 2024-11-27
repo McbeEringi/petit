@@ -23,6 +23,9 @@ PetitJS - set of *petit* and useful JS libs
 - **PetitPNG** PNG binary generator [doc](docs/png.md) [src](png.mjs) *1.48kB*
 - **PetitNBT** NBT reader & writer [doc](docs/nbt.md) [src](nbt.mjs) *2.3kB*
 - **PetitQR** QRCode encoder ⛓ [doc](docs/qr.md) [src](qr.mjs) *8.7kB*
+- **PetitTrace** Bitmap tracer [src](trace.mjs) *1.5kB*
+- **PetitTOTP** TOTP generator & migration url decoder  [src](totp.mjs) *1.4kB*
+- **PetitProtoBuf** protocolbuffer decoder [src](protobuf.mjs) *374B*
 
 ### SVG
 
