@@ -34,4 +34,14 @@ migurl=w=>((
 
 export{totp};
 
-console.log(Date.now(),await totp({secret:'helloworld234567'}),migurl('otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'));
+console.log(await Promise.all(migurl(
+	'otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'
+).params.map(async x=>({
+	name:x.name,
+	issuer:x.issuer,
+	key:await totp({
+		secret:x.secret.base32,
+		algorithm:x.algorithm,
+		digits:x.digits
+	})
+}))));
