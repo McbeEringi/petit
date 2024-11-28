@@ -20,20 +20,23 @@ migurl=w=>((
 	b32en=w=>(x=>[...Array(Math.ceil(x.length/5))].map(
 		(_,i)=>'abcdefghijklmnopqrstuvwxyz234567'[+`0b${x.slice(5*i++,5*i).padEnd(5,0)}`]
 	).join('').padEnd(Math.ceil(x.length/40)*8,'='))(w.reduce((a,x)=>a+x.toString(2).padStart(8,0),''))
-)=>depb(new Uint8Array([...atob(decodeURIComponent(new URLSearchParams(new URL(w).search).get('data')))].map(x=>x.charCodeAt()))).reduce((a,x)=>(
-	x.i==1?a.params.push(
-		depb(x.value).reduce((a,x)=>(([,
-			x=>a.secret={raw:x,base32:b32en(x)},
-			x=>a.name=td.decode(x),
-			x=>a.issuer=td.decode(x),
-			x=>a.algorithm=[,'SHA-1','SHA-256','SHA-512','MD5'][x],
-			x=>a.digits=[,6,8][x],
-			x=>a.type=[,'HOTP','TOTP'][x],
-			x=>a.conter=x
-		][x.i]||(y=>a[x.i]=y))(x.value),a),{})
-	):a[[,,'version','batch_size','batch_index','batch_id'][x.i]||x.i]=x.value,
-	a
-),{params:[]}))();
+)=>(
+	w=new URL(w),w.href.match(/^[^?]+/)=='otpauth-migration://offline'&&(w=w.searchParams.get('data'))&&
+	depb(new Uint8Array([...atob(decodeURIComponent(w))].map(x=>x.charCodeAt()))).reduce((a,x)=>(
+		x.i==1?a.params.push(
+			depb(x.value).reduce((a,x)=>(([,
+				x=>a.secret={raw:x,base32:b32en(x)},
+				x=>a.name=td.decode(x),
+				x=>a.issuer=td.decode(x),
+				x=>a.algorithm=[,'SHA-1','SHA-256','SHA-512','MD5'][x],
+				x=>a.digits=[,6,8][x],
+				x=>a.type=[,'HOTP','TOTP'][x],
+				x=>a.conter=x
+			][x.i]||(y=>a[x.i]=y))(x.value),a),{})
+		):a[[,,'version','batch_size','batch_index','batch_id'][x.i]||x.i]=x.value,
+		a
+	),{params:[]})
+))();
 
 export{totp};
 
