@@ -38,7 +38,7 @@ migurl=w=>((
 	),{params:[]})
 ))();
 
-export{totp};
+export{totp,migurl};
 
 console.log(await migurl(
 	'otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'
