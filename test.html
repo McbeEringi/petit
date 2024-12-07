@@ -134,8 +134,8 @@
 	<textarea id="qrinp" class="zab">[`Hello world! 0123`,`こんにちは世界！`]</textarea><br>
 	<button id="qrbtn" class="zab bgca">run</button><br>
 	<style>img{width:min(100%,512px);}</style>
-	<img id="qrimg"><img id="qrsvg">
-	<textarea id="qrlog" class="zab" spellcheck="false"></textarea>
+	<img id="qrimg"><img id="qrsvg"><br>
+	kicad_mod 10mm<textarea id="qrlog" class="zab" spellcheck="false"></textarea>
 	<script type="module">
 		import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
 		import{QR,trace}from'./qr.mjs';
@@ -147,7 +147,7 @@
 			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
 			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
 			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:0}).toDataURL(),
-			qrlog.value=_.toKiCAD_MOD({size:20,invert:0})
+			qrlog.value=_.toKiCAD_MOD({size:10,invert:0})
 		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
 	</script>
 	<hr>
