@@ -128,6 +128,22 @@
 				);
 			</script>
 		</div>
+		<div>
+			<h2>png</h2>
+			<img id="pngimg">
+			<script type="module">
+				import{png}from'./png.mjs';
+				const w=png({
+					data:[[255,255,255,255], [255,0,0,0x80], [0,255,0,0x80], [0,0,255,255]],
+					//data:[0,1,2,3],
+					width:2,height:2,//palette:[0xffffff,0xff0000,0xff00,0xff],
+					alpha:1
+				});
+				console.log(w);
+				pngimg.src=w.toDataURL();
+
+			</script>
+		</div>
 	</div>
 	<hr>
 	<h2>qr</h2>
