@@ -14,7 +14,8 @@ unzip=async(w=new Blob())=>((
 	w,e=w.reduceRight((a,_,i)=>a||[80,75,5,6].every((x,j)=>w[i+j]==x)&&i,0),le=(p,l=2)=>[...Array(l)].reduce((a,_,i)=>a|w[p+i]<<8*i,0),
 	ddt=x=>new Date((x>>>25)+1980,(x>>>21&15)-1,x>>>16&31,x>>>11&31,x>>>5&63,(x&31)*2).getTime(),td=new TextDecoder()
 )=>Promise.all([...Array(le(e+8))].reduce((a,p=a.p,n)=>(
-	(n=td.decode(new Uint8Array(w.buffer,p+46,le(p+28))))[n.length-1]!='/'&&a.a.push((async()=>new File([await{
+	n=[...{[Symbol.iterator]:(q=p+46+le(p+28),e=q+le(p+30))=>({next:_=>({done:e<=q,value:[le(q),[q+4,le(q+2)]],_:q+=4+le(q+2)})})}].reduce((a,[i,x])=>(a[i]=x,a),{})[0x7075],// Info-ZIP Unicode Path Extra Field
+	n=td.decode(new Uint8Array(w.buffer,...n?[n[0]+5,n[1]-5]:[p+46,le(p+28)])),n[n.length-1]!='/'&&a.a.push((async()=>new File([await{
 		0:_=>_,8:async(x,_)=>(_=self.DecompressionStream)?await new Response(new Blob([x]).stream().pipeThrough(new _('deflate-raw'))).blob():x
 	}[le(p+10)](new Uint8Array(w.buffer,(l=>l+30+le(l+26)+le(l+28))(le(p+42,4)),le(p+20,4)))],n,{lastModified:ddt(le(p+12,4))}))()),a.p+=46+le(p+28)+le(p+30)+le(p+32),a
 ),{p:le(e+16,4),a:[]}).a))((w=w.buffer||w,new Uint8Array(w instanceof ArrayBuffer?w:await new Response(w).arrayBuffer()))),
