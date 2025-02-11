@@ -17,7 +17,7 @@ PetitJS - set of *petit* and useful JS libs
 ### Utility
 
 - **PetitCol** color convertion [doc](docs/col.md) [src](col.mjs) *395B*
-- **PetitZip** zip unzip & DL helper [doc](docs/zip.md) [src](zip.mjs) *2.9kB*
+- **PetitZip** zip unzip & DL helper [doc](docs/zip.md) [src](zip.mjs) *3.0kB*
 - **PetitRiff** RIFF parser WIP ~~doc~~ [src](riff.mjs) *297B*
 - **PetitSJIS** Shift-JIS encoder & decoder [doc](docs/sjis.md) [src](sjis.mjs) *596B*
 - **PetitPNG** PNG binary generator [doc](docs/png.md) [src](png.mjs) *1.48kB*
