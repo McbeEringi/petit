@@ -9,6 +9,7 @@
 ## Dependencies
 
 [PetitPNG](../docs/png.md)
+[PetitTrace](../docs/trace.md)
 
 ## Exports
 
@@ -81,6 +82,23 @@ class QR{
 
         */
         return png();
+      }
+      toSVG(){
+        /*
+
+        TextFileStructure expands String{}
+
+          toBlob()
+          toDataURL()
+
+        */
+        return file();
+      }
+      toKiCAD_MOD({ generator='PetitQR', name=this.data_raw.join(''), invert,padding=4, size=10, layer='F.Mask' }){
+        return file();
+      }
+      toKiCAD_MOD({ generator='PetitQR', name=this.data_raw.join(''), invert,padding=4, size=25.4}){
+        return file();
       }
     };
   }

@@ -147,24 +147,53 @@
 	</div>
 	<hr>
 	<h2>qr</h2>
-	<textarea id="qrinp" class="zab">[`Hello world! 0123`,`こんにちは世界！`]</textarea><br>
-	<button id="qrbtn" class="zab bgca">run</button><br>
-	<style>img{width:min(100%,512px);}</style>
-	<img id="qrimg"><img id="qrsvg"><br>
-	kicad_mod 10mm<textarea id="qrlog" class="zab" spellcheck="false"></textarea>
+	<div id="qrinp"></div>
+	<div id="qrctn">
+		<style>#qrctn img,#qrctn textarea{width:min(100%,256px);aspect-ratio:1;vertical-align:middle;}</style>
+		<img id="qrpng" class="zab">
+		<img id="qrsvg" class="zab">
+		<textarea id="qrkmod" class="zab" spellcheck="false"></textarea>
+		<textarea id="qrksym" class="zab" spellcheck="false"></textarea>
+	</div>
 	<script type="module">
-		import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
+		//import TA from'https://mcbeeringi.github.io/ta/ta.mjs';
+		import { EditorView, keymap, showPanel, setup } from "https://mcbeeringi.github.io/src/cm.mjs";
+		import { javascript } from 'https://mcbeeringi.github.io/src/cm/@codemirror-lang-javascript.js';
 		import{QR,trace}from'./qr.mjs';
-		TA.editor(qrinp);
+		//TA.editor(qrinp);
 		self.QR=QR;self.trace=trace;
-		const qr=new QR();
-		(qrbtn.onclick=qrinp.oninput=_=>(async _=>(
-			console.log(_=qr.gen(Function(`return ${qrinp.value};`)())),
-			_.fg=+('0x'+[...[...getComputedStyle(qrimg).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
-			qrimg.src=_.toPNG({fg:_.fg,bg:0}).toDataURL(),
-			qrsvg.src=_.toSVG({fg:_.fg,bg:0,invert:0}).toDataURL(),
-			qrlog.value=_.toKiCAD_MOD({size:10,invert:0})
-		))().then(_=>qrimg.style.opacity=1).catch(e=>(console.warn(e),qrimg.style.opacity=.5)))();
+		const
+			qr=new QR(),
+			main=_=>(async _=>(
+				_=Function(cm.state.doc)(),
+				console.log(_.qr=qr.gen(..._.gen)),
+				qrpng.src=_.qr.toPNG(_.toPNG).toDataURL(),
+				qrsvg.src=_.qr.toSVG(_.toSVG).toDataURL(),
+				qrkmod.value=_.qr.toKiCAD_MOD(_.toKiCAD_MOD),
+				qrksym.value=_.qr.toKiCAD_SYM(_.toKiCAD_SYM)
+			))().then(_=>qrctn.style.opacity=1).catch(e=>(console.warn(e),qrctn.style.opacity=.5)),
+			cm=new EditorView({
+				doc:`const
+	col={ // 0xRRGGBBAA
+		fg:+('0x'+[...[...getComputedStyle(qrctn).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
+		bg:0
+	},
+	invert=false;
+return{
+	gen:[
+		[\`Hello world! 0123\`,\`こんにちは世界！\`],
+		{ecl:0,ver:0,mask:-1}
+	],
+	toPNG:{...col},
+	toSVG:{...col,invert},
+	toKiCAD_MOD:{size:10,invert,layer:'F.Mask'},
+	toKiCAD_SYM:{size:25.4,invert}
+};`,
+				extensions:[setup,javascript(),EditorView.updateListener.of(x=>x.docChanged&&main())],
+				parent:qrinp
+			});
+		matchMedia('(prefers-color-scheme:dark)').addEventListener('change',main);
+		main();
 	</script>
 	<hr>
 	<h2>svg</h2>
