@@ -1,6 +1,6 @@
 const
 zip=(w=[],f=_=>_,cs)=>((// Version Made by: UNIX cf.ExtFileAttrHIGH...<bits/stat.h> le2(reguler644=0x81a4)=ea
-	u=x=>new Uint8Array(x),zz=u([0,0],cs=cs&&self.CompressionStream),vr=u([cs?20:10,0]),vm=u([20,3]),ea=u([164,129]),pk=u([80,75]),_12=u([1,2]),_34=u([3,4]),gf=u([0,8]),cm=cs?u([8,0]):zz,
+	u=x=>new Uint8Array(x),zz=u([0,0],cs=cs&&globalThis.CompressionStream),vr=u([cs?20:10,0]),vm=u([20,3]),ea=u([164,129]),pk=u([80,75]),_12=u([1,2]),_34=u([3,4]),gf=u([0,8]),cm=cs?u([8,0]):zz,
 	le2=x=>u([x,x>>>8]),le4=x=>u([x,x>>>8,x>>>16,x>>>24]),l=x=>x.byteLength||x.size||0,cnt=x=>le4(x.reduce((a,y)=>a+l(y),0)),te=new TextEncoder(),i=0,
 	iab=x=>x instanceof ArrayBuffer,dfl=b=>cs?new Response((iab(b)?new Blob([b]):b).stream().pipeThrough(new cs('deflate-raw'))).blob():b,
 	ddt=x=>((x.getFullYear()-1980)<<25)|((x.getMonth()+1)<<21)|(x.getDate()<<16)|(x.getHours()<<11)|(x.getMinutes()<<5)|(x.getSeconds()>>1),// mmmsssss hhhhhmmm MMMDDDDD YYYYYYYM // Y-=1980;s/=2;
@@ -17,7 +17,7 @@ unzip=async(w=new Blob())=>((
 )=>Promise.all([...Array(le(e+8))].reduce((a,p=a.p,n)=>(
 	n=[...{[Symbol.iterator]:(q=p+46+le(p+28),e=q+le(p+30))=>({next:_=>({done:e<=q,value:[le(q),[q+4,le(q+2)]],_:q+=4+le(q+2)})})}].reduce((a,[i,x])=>(a[i]=x,a),{})[0x7075],// Info-ZIP Unicode Path Extra Field
 	n=td.decode(new Uint8Array(w.buffer,...n?[n[0]+5,n[1]-5]:[p+46,le(p+28)])),n[n.length-1]!='/'&&a.a.push((async()=>new File([await{
-		0:_=>_,8:async(x,_)=>(_=self.DecompressionStream)?await new Response(new Blob([x]).stream().pipeThrough(new _('deflate-raw'))).blob():x
+		0:_=>_,8:async(x,_)=>(_=globalThis.DecompressionStream)?await new Response(new Blob([x]).stream().pipeThrough(new _('deflate-raw'))).blob():globalThis.Bun?Bun.inflateSync(x):(console.warn('inflate impl not found!'),x)
 	}[le(p+10)](new Uint8Array(w.buffer,(l=>l+30+le(l+26)+le(l+28))(le(p+42,4)),le(p+20,4)))],n,{lastModified:ddt(le(p+12,4))}))()),a.p+=46+le(p+28)+le(p+30)+le(p+32),a
 ),{p:le(e+16,4),a:[]}).a))((w=w.buffer||w,new Uint8Array(w instanceof ArrayBuffer?w:await new Response(w).arrayBuffer()))),
 

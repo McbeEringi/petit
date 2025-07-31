@@ -16,7 +16,7 @@
   passing ArrayBuffer will speed up process speed
 - ***async*** unzip( Zip *Blob ArrayBuffer* ) => [ file *File* ...]*Array(N)*  
   unzip .zip archive
-  compressed entry will skipped if DecompressionStream is unsupported
+  if neither DecompressionStream nor BunAPI is unsupported, compressed entry will dumped as is
 - dl( file={ name *String*, buffer *Blob ArrayBuffer* } *Object* ) => undefined  
   download blob to the device
 
