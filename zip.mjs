@@ -23,7 +23,10 @@ unzip=async(w=new Blob())=>((
 
 dl=({name:n,buffer:b})=>(a=>URL.revokeObjectURL(a.href=URL.createObjectURL(b instanceof Blob?b:new Blob([b])),a.download=n,a.click()))(document.createElement('a')),
 progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length')],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
-// progress=(w,f,s)=>((r=w.body.getReader(),p=[0,+w.headers.get('content-length')],b,c=_=>(b=1,r.cancel()))=>Array.fromAsync({[Symbol.asyncIterator]:_=>(
-// 	s.addEventListener('abort',c),f(p),{next:async x=>(x=(await r.read()).value,b&&await Promise.reject('Load aborted.'),x?(p[0]+=x.length,f(p)):s.removeEventListener('abort',c),{done:!x,value:x})}
-// )}))();
+// progress=(w,f,s)=>((
+// 	r=w.body.getReader(),p=[0,+w.headers.get('content-length')],b,c=_=>(b=1,r.cancel()),d=_=>Promise.reject({message:'Load aborted.'})
+// )=>s?.aborted?d():Array.fromAsync({[Symbol.asyncIterator]:_=>(s?.addEventListener('abort',c,{once:1}),f(p),{next:async x=>(
+// 	x=(await r.read()).value,b&&await d(),x?(p[0]+=x.length,f(p)):s?.removeEventListener('abort',c),{done:!x,value:x}
+// )})}))();
+
 export{zip,unzip,dl,progress};
