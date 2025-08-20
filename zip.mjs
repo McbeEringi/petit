@@ -23,5 +23,5 @@ unzip=async(w=new Blob())=>((
 
 dl=({name:n,buffer:b})=>(a=>URL.revokeObjectURL(a.href=URL.createObjectURL(b instanceof Blob?b:new Blob([b])),a.download=n,a.click()))(document.createElement('a')),
 progress=(w,f)=>new Response(new ReadableStream({start:async(c,x,s=[0,+w.headers.get('content-length')],r=w.body.getReader())=>{f(s);while(x=(await r.read()).value){c.enqueue(x);s[0]+=x.length;f(s);}c.close();}}));
-//progress=(w,f)=>((r=w.body.getReader(),s=[0,+w.headers.get('content-length')])=>Array.fromAsync({[Symbol.asyncIterator]:_=>(f(s),{next:async x=>(x=(await r.read()).value,x&&(s[0]+=x.length,f(s)),{done:!x,value:x})})}))();
+// progress=(w,f,c)=>((r=w.body.getReader(),s=[0,+w.headers.get('content-length')],b)=>Array.fromAsync({[Symbol.asyncIterator]:_=>(c?.(_=>(b=1,r.cancel())),f(s),{next:async x=>(x=(await r.read()).value,b&&await Promise.reject('canceled'),x&&(s[0]+=x.length,f(s)),{done:!x,value:x})})}))();
 export{zip,unzip,dl,progress};
