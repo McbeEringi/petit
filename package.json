@@ -1,0 +1,22 @@
+{
+  "name": "@mcbeeringi/petit",
+  "version": "0.0.2",
+  "description": "set of *petit* and useful JS libs",
+  "homepage": "https://mcbeeringi.dev/petit/",
+  "bugs": {
+    "url": "https://github.com/mcbeeringi/petit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcbeeringi/petit.git"
+  },
+  "license": "MIT",
+  "author": "McbeEringi",
+  "type": "module",
+  "exports": {
+    "./*": "./*.mjs"
+  },
+  "directories": {
+    "doc": "docs"
+  }
+}

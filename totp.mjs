@@ -40,6 +40,6 @@ migurl=w=>((
 
 export{totp,migurl};
 
-console.log(await migurl(
-	'otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'
-).params.reduce(async(a,x)=>(x.key=await totp(x),[...await a,x]),[]));
+// console.log(await migurl(
+// 	'otpauth-migration://offline?data=CjkKCjkWt1nRWPW%2Bd98SEGhlbGxvd29ybGQyMzQ1NjcgASgBMAJCEzlkZDNjMzE3MzI3MjAwMzcyMTIQAhgBIAA%3D'
+// ).params.reduce(async(a,x)=>(x.key=await totp(x),[...await a,x]),[]));
