@@ -177,17 +177,16 @@
 	col={ // 0xRRGGBBAA
 		fg:+('0x'+[...[...getComputedStyle(qrctn).getPropertyValue('--fc').slice(1)].map(x=>x+x),'ff'].join('')),
 		bg:0
-	},
-	invert=false;
+	};
 return{
 	gen:[
 		[\`Hello world! 0123\`,\`こんにちは世界！\`],
 		{ecl:0,ver:0,mask:-1}
 	],
 	toPNG:{...col},
-	toSVG:{...col,invert},
-	toKiCAD_MOD:{size:10,invert,layer:'F.Mask'},
-	toKiCAD_SYM:{size:25.4,invert}
+	toSVG:{...col},
+	toKiCAD_MOD:{size:10,layer:'F.Mask'},
+	toKiCAD_SYM:{size:25.4}
 };`,
 				extensions:[setup,javascript(),EditorView.updateListener.of(x=>x.docChanged&&main())],
 				parent:qrinp
