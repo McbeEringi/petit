@@ -14,6 +14,43 @@ trace=(w,f=x=>x)=>Object.assign(
 			f.slice(0,-1).reverse().map(x=>xy(x[0].p)).join('')
 		).join('\n').replace(/\.?0{4,}\d(?=\D|$)/g,''))()
 	}
+),
+
+trace_=(w,f=x=>x,t)=>(
+	w=w.reduce((a,y,j)=>(y.forEach((p,i,v,h)=>f(p)&&(
+		p=j*y.length+i,h=0<i&&a.l[p-1],v=0<j&&a.l[p-y.length],
+		h&&v?(a.l[p]=h,((x,y)=>x==y||(a.p[y]=x))(a.find(h),a.find(v))):
+		h?(a.l[p]=h):v?(a.l[p]=v):
+		(a.p[a.n]=a.l[p]=a.n++)
+	)),a),((
+		l=[],p=[],n=1,
+		find=x=>[x,...{[Symbol.iterator]:_=>({next:_=>({done:p[x]==x,value:(p[x]=p[p[x]],x=p[x])})})}].pop(),
+		zip=_=>(l.forEach((_,i)=>l[i]&&(l[i]=find(l[i]))),l)
+	)=>({l,p,n,find,zip}))()).zip(),
+
+
+	console.log(w),
+
+
+
+	// [...w].map((w,b)=>(// edge
+	// 	// b=(f=>({
+	// 	// 	x:f(x.values().flatMap(x=>[...x])),
+	// 	// 	y:f(x.keys())
+	// 	// }))(x=>({min:Math.min(...x),max:Math.max(...x)})),
+	//
+	// 	[...w].reduce((a,[j,i])=>(
+	// 	),new Set())
+	// ))
+
+	// trace
+
+	// w.toSVGPath=_=>(
+	// 	_=[...w].flatMap(o=>[...o].map(p=>`M${p}v1e-9`)).join(''),
+	// 	console.log(_),
+	// 	_
+	// ),
+	w
 );
 
 export{trace};
